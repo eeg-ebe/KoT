@@ -1,5 +1,4 @@
 * {
-    font-family: Deja Vu;
     font-size: 14px;
     margin: 0px;
     padding: 0px;
@@ -10,6 +9,7 @@ p {
 }
 
 .contentdiv {
+    font-family: Deja Vu;
     margin: 10px;
     margin: 0 auto;
     width: 750px;
@@ -122,6 +122,6 @@ p {
     float: right;
 }
 
-.svg {
+svg {
     font-family: Courier New !important;
 }
