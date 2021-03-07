@@ -1840,18 +1840,29 @@ kretha_GraphNode.prototype = {
 var kretha_Kretha = function() { };
 kretha_Kretha.__name__ = true;
 kretha_Kretha.onMessage = function(e) {
-	var fileContent = js_Boot.__cast(e.data.txt , String);
-	var reader = new kretha_FastaAlignmentReader();
-	var seqs = reader.readSequences(fileContent);
-	var g = kretha_NeighborJoining.run(seqs);
-	var c = kretha_MidPointRooter.root(g,seqs);
-	kretha_FourTimesRule.doRule(c);
-	var svg = c.getSVG();
 	var result = new haxe_ds_StringMap();
-	if(__map_reserved["svg"] != null) {
-		result.setReserved("svg",svg);
-	} else {
-		result.h["svg"] = svg;
+	try {
+		var fileContent = js_Boot.__cast(e.data.txt , String);
+		var reader = new kretha_FastaAlignmentReader();
+		var seqs = reader.readSequences(fileContent);
+		var g = kretha_NeighborJoining.run(seqs);
+		var c = kretha_MidPointRooter.root(g,seqs);
+		kretha_FourTimesRule.doRule(c);
+		var svg = c.getSVG();
+		if(__map_reserved["svg"] != null) {
+			result.setReserved("svg",svg);
+		} else {
+			result.h["svg"] = svg;
+		}
+	} catch( e1 ) {
+		if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
+		console.log(e1);
+		var value = "The following error occurred: " + Std.string(e1);
+		if(__map_reserved["svg"] != null) {
+			result.setReserved("svg",value);
+		} else {
+			result.h["svg"] = value;
+		}
 	}
 	kretha_Kretha.workerScope.postMessage(result);
 };

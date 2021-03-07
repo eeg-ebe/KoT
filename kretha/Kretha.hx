@@ -47,15 +47,20 @@ class Kretha {
     #if js
     static var workerScope:js.html.DedicatedWorkerGlobalScope;
     public static function onMessage(e:js.html.MessageEvent):Void {
-        var fileContent:String = cast(e.data.txt, String);
-        var reader:FastaAlignmentReader = new FastaAlignmentReader();
-        var seqs:Vector<Sequence> = reader.readSequences(fileContent);
-        var g = NeighborJoining.run(seqs);
-        var c:Clade = MidPointRooter.root(g, seqs);
-        FourTimesRule.doRule(c);
-        var svg:String = c.getSVG();
         var result:StringMap<String> = new StringMap<String>();
-        result.set("svg", svg);
+        try {
+            var fileContent:String = cast(e.data.txt, String);
+            var reader:FastaAlignmentReader = new FastaAlignmentReader();
+            var seqs:Vector<Sequence> = reader.readSequences(fileContent);
+            var g = NeighborJoining.run(seqs);
+            var c:Clade = MidPointRooter.root(g, seqs);
+            FourTimesRule.doRule(c);
+            var svg:String = c.getSVG();
+            result.set("svg", svg);
+        } catch(e:Dynamic) {
+            trace(e);
+            result.set("svg", "The following error occurred: " + e);
+        }
         workerScope.postMessage(result);
     }
     #end
