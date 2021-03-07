@@ -184,11 +184,11 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
         var theta1:Float = calcTheta(bestClades.first(), c);
         var theta2:Float = calcTheta(bestClades.last(), c);
-        c.addInfo(floatToStringPrecision(theta1, 3) + " " + floatToStringPrecision(theta2, 3));
+        c.addInfo(floatToStringPrecision(theta1, 5) + " " + floatToStringPrecision(theta2, 5));
         var theta:Float = (theta1 > theta2) ? theta1 : theta2;
         if (theta != -1) {
             var ratio:Float = k / theta;
-            c.addInfo(floatToStringPrecision(k, 3) + "/" + floatToStringPrecision(theta, 3) + "=" + floatToStringPrecision(ratio, 3));
+            c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
             if (ratio >= 4) {
                 if (sA.length == 1 && sB.length == 1) {
                     var colors = ["green", "blue", "red"];

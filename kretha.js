@@ -1628,12 +1628,12 @@ kretha_FourTimesRule.speciesInClade = function(c) {
 	}
 	pi1 = pairwiseDistance1 * n1 / (n1 - 1);
 	var theta2 = pi1 / (1 - 4 * pi1 / 3);
-	var info = kretha_FourTimesRule.floatToStringPrecision(theta1,3) + " " + kretha_FourTimesRule.floatToStringPrecision(theta2,3);
+	var info = kretha_FourTimesRule.floatToStringPrecision(theta1,5) + " " + kretha_FourTimesRule.floatToStringPrecision(theta2,5);
 	c.mInfo.add(info);
 	var theta = theta1 > theta2 ? theta1 : theta2;
 	if(theta != -1) {
 		var ratio = k / theta;
-		var info1 = kretha_FourTimesRule.floatToStringPrecision(k,3) + "/" + kretha_FourTimesRule.floatToStringPrecision(theta,3) + "=" + kretha_FourTimesRule.floatToStringPrecision(ratio,3);
+		var info1 = kretha_FourTimesRule.floatToStringPrecision(k,5) + "/" + kretha_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kretha_FourTimesRule.floatToStringPrecision(ratio,5);
 		c.mInfo.add(info1);
 		if(ratio >= 4) {
 			if(sA.length == 1 && sB.length == 1) {
