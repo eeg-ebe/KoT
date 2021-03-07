@@ -121,3 +121,7 @@ p {
 .right {
     float: right;
 }
+
+.svg {
+    font-family: Courier New !important;
+}
