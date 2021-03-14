@@ -194,7 +194,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
                     var colors = ["green", "blue", "red"];
                     var pcolor:Int = 0;
                     for (child in c.getChilds()) {
-//                        child.colorfy(colors[pcolor]);
+                        child.colorfy(colors[pcolor]);
                         pcolor = (pcolor + 1) % colors.length;
                     }
                 }

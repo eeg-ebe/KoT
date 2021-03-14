@@ -1637,16 +1637,15 @@ kretha_FourTimesRule.speciesInClade = function(c) {
 		c.mInfo.add(info1);
 		if(ratio >= 4) {
 			if(sA.length == 1 && sB.length == 1) {
-				var colors_0 = "green";
-				var colors_1 = "blue";
-				var colors_2 = "red";
+				var colors = ["green","blue","red"];
 				var pcolor = 0;
 				var _g_head7 = c.mChilds.h;
 				while(_g_head7 != null) {
 					var val9 = _g_head7.item;
 					_g_head7 = _g_head7.next;
 					var child1 = val9;
-					pcolor = (pcolor + 1) % 3;
+					child1.colorfy(colors[pcolor]);
+					pcolor = (pcolor + 1) % colors.length;
 				}
 			}
 			var _g_head8 = sA.h;
