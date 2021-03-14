@@ -153,7 +153,7 @@ class Clade {
     public function getSVG():String {
         var result:Array<String> = new Array<String>();
         var dim:{ w:Float, h:Float } = calcSize(false);
-        result.push("<svg version='1.1' baseProfile='full' width='" + (2 * mBorder + 200 + dim.w) + "' height='" + (2 * mBorder + dim.h) + "' xmlns='http://www.w3.org/2000/svg'>");
+        result.push("<svg id='resultTree' version='1.1' baseProfile='full' width='" + (2 * mBorder + 200 + dim.w) + "' height='" + (2 * mBorder + dim.h) + "' xmlns='http://www.w3.org/2000/svg'>");
         result.push("<g style='stroke:" + mColor + ";stroke-width:" + mLineWidth + "' font-family='Courier New' font-size='" + mTextSize + "'>");
         paint(result, mBorder, mBorder, mColor);
         result.push("</g>");

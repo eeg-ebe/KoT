@@ -585,7 +585,7 @@ kretha_Clade.prototype = {
 		}
 		this.mLastSizeCalc = { w : w, h : h};
 		var dim = this.mLastSizeCalc;
-		result.push("<svg version='1.1' baseProfile='full' width='" + (2 * this.mBorder + 200 + dim.w) + "' height='" + (2 * this.mBorder + dim.h) + "' xmlns='http://www.w3.org/2000/svg'>");
+		result.push("<svg id='resultTree' version='1.1' baseProfile='full' width='" + (2 * this.mBorder + 200 + dim.w) + "' height='" + (2 * this.mBorder + dim.h) + "' xmlns='http://www.w3.org/2000/svg'>");
 		result.push("<g style='stroke:" + this.mColor + ";stroke-width:" + this.mLineWidth + "' font-family='Courier New' font-size='" + this.mTextSize + "'>");
 		this.paint(result,this.mBorder,this.mBorder,this.mColor);
 		result.push("</g>");

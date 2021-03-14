@@ -32,6 +32,7 @@
                 <button onclick="resetForm()">Reset form</button>
             </span>
             <p><br></p>
+            <div id="downloadDiv"></div>
             <div id="result" style="display: none; width: 100%; font-family: Courier New">
             </div>
             <p><br></p>
@@ -57,6 +58,7 @@ function calculate() {
     worker.addEventListener("message", function(e) {
         data = e.data;
         resultEle.innerHTML = data.h.svg;
+        addDownloadLink();
     });
 
     var txt = document.getElementById('faFileContent').value;
@@ -77,6 +79,13 @@ function calculate() {
         worker.postMessage({"txt" : data.target.result});
     };
     reader.readAsText(files[0]);
+}
+
+function addDownloadLink() {
+    var content = document.getElementById('result').innerHTML;
+    var b64 = window.btoa(content);
+    var link = "<a id='downloadLink' href-lang='image/svg' href='data:image/svg;base64,\n" + b64 + "' title='result.svg' download='image.svg'>Download</a>";
+    document.getElementById("downloadDiv").innerHTML = link;
 }
 
         </script>
