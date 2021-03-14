@@ -66,6 +66,7 @@ class Clade {
      * Colorfy this clade (and all subclades).
      */
     public function colorfy(color:String) {
+        if (mColor != "black") { return; }
         this.mColor = color;
         for (child in mChilds) {
             child.colorfy(color);

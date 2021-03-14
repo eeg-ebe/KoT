@@ -472,6 +472,9 @@ var kretha_Clade = function() {
 kretha_Clade.__name__ = true;
 kretha_Clade.prototype = {
 	colorfy: function(color) {
+		if(this.mColor != "black") {
+			return;
+		}
 		this.mColor = color;
 		var _g_head = this.mChilds.h;
 		while(_g_head != null) {
@@ -1636,17 +1639,15 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var info1 = kretha_FourTimesRule.floatToStringPrecision(k,5) + "/" + kretha_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kretha_FourTimesRule.floatToStringPrecision(ratio,5);
 		c.mInfo.add(info1);
 		if(ratio >= decisionRatio) {
-			if(sA.length == 1 && sB.length == 1) {
-				var colors = ["green","blue","red"];
-				var pcolor = 0;
-				var _g_head7 = c.mChilds.h;
-				while(_g_head7 != null) {
-					var val9 = _g_head7.item;
-					_g_head7 = _g_head7.next;
-					var child1 = val9;
-					child1.colorfy(colors[pcolor]);
-					pcolor = (pcolor + 1) % colors.length;
-				}
+			var colors = ["green","blue","red"];
+			var pcolor = 0;
+			var _g_head7 = c.mChilds.h;
+			while(_g_head7 != null) {
+				var val9 = _g_head7.item;
+				_g_head7 = _g_head7.next;
+				var child1 = val9;
+				child1.colorfy(colors[pcolor]);
+				pcolor = (pcolor + 1) % colors.length;
 			}
 			var _g_head8 = sA.h;
 			while(_g_head8 != null) {
@@ -1672,7 +1673,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 };
 kretha_FourTimesRule.doRule = function(c,decisionRatio) {
 	kretha_FourTimesRule.seqsInClade(c);
-	kretha_FourTimesRule.speciesInClade(c,decisionRatio);
+	console.log("" + Std.string(kretha_FourTimesRule.speciesInClade(c,decisionRatio)));
 };
 var kretha_Graph = function(nodeInfo) {
 	var this1 = new haxe_ds__$HashMap_HashMapData();

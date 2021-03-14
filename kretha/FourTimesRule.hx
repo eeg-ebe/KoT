@@ -190,13 +190,11 @@ public static function floatToStringPrecision(n:Float, prec:Int){
             var ratio:Float = k / theta;
             c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
             if (ratio >= decisionRatio) {
-                if (sA.length == 1 && sB.length == 1) {
-                    var colors = ["green", "blue", "red"];
-                    var pcolor:Int = 0;
-                    for (child in c.getChilds()) {
-                        child.colorfy(colors[pcolor]);
-                        pcolor = (pcolor + 1) % colors.length;
-                    }
+                var colors = ["green", "blue", "red"];
+                var pcolor:Int = 0;
+                for (child in c.getChilds()) {
+                    child.colorfy(colors[pcolor]);
+                    pcolor = (pcolor + 1) % colors.length;
                 }
                 for (n1 in sA) {
                     l.add(n1);
@@ -215,7 +213,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
 
     public static function doRule(c:Clade, decisionRatio:Float):Void {
         seqsInClade(c);
-        speciesInClade(c, decisionRatio);
+        trace("" + speciesInClade(c, decisionRatio));
     }
 
 }
