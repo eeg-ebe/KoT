@@ -50,11 +50,12 @@ class Kretha {
         var result:StringMap<String> = new StringMap<String>();
         try {
             var fileContent:String = cast(e.data.txt, String);
+            var decisionRatio:Float = cast(e.data.decisionRatio, Float);
             var reader:FastaAlignmentReader = new FastaAlignmentReader();
             var seqs:Vector<Sequence> = reader.readSequences(fileContent);
             var g = NeighborJoining.run(seqs);
             var c:Clade = MidPointRooter.root(g, seqs);
-            FourTimesRule.doRule(c);
+            FourTimesRule.doRule(c, decisionRatio);
             var svg:String = c.getSVG();
             result.set("svg", svg);
         } catch(e:Dynamic) {

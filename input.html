@@ -26,6 +26,8 @@
             </span>
             <i>or</i> copy/paste the fasta file content to this textarea<br>
             <textarea id="faFileContent" style="width: 100%" autocomplete="off"></textarea>
+            <br>
+            <input id="decisionRatio" type="text" placeholder="Decision Ratio" value="4" />
             <br><br>
             <span class="middle">
                 <button onclick="calculate()">Calculate</button>
@@ -54,6 +56,9 @@ function calculate() {
     resultEle.innerHTML = "Calculating ... Please wait ...";
     resultEle.style.display = "block";
 
+    var ratioTxt = document.getElementById('decisionRatio').value;
+    var ratio = parseFloat(ratioTxt);
+
     var worker = new Worker("kretha.js");
     worker.addEventListener("message", function(e) {
         data = e.data;
@@ -76,7 +81,7 @@ function calculate() {
     }
     var reader = new FileReader();
     reader.onload = function(data) {
-        worker.postMessage({"txt" : data.target.result});
+        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio});
     };
     reader.readAsText(files[0]);
 }

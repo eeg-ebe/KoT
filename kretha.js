@@ -1416,7 +1416,7 @@ kretha_FourTimesRule.floatToStringPrecision = function(n,prec) {
 		return HxOverrides.substr(str,0,str.length - prec) + "." + HxOverrides.substr(str,str.length - prec,null);
 	}
 };
-kretha_FourTimesRule.speciesInClade = function(c) {
+kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 	var l = new List();
 	if(c.mChilds.length == 0) {
 		var _this = c.mConnectedInfo;
@@ -1435,7 +1435,7 @@ kretha_FourTimesRule.speciesInClade = function(c) {
 		var val = _g_head.item;
 		_g_head = _g_head.next;
 		var child = val;
-		var sub = kretha_FourTimesRule.speciesInClade(child);
+		var sub = kretha_FourTimesRule.speciesInClade(child,decisionRatio);
 		s.add(sub);
 	}
 	if(s.length != 2) {
@@ -1635,7 +1635,7 @@ kretha_FourTimesRule.speciesInClade = function(c) {
 		var ratio = k / theta;
 		var info1 = kretha_FourTimesRule.floatToStringPrecision(k,5) + "/" + kretha_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kretha_FourTimesRule.floatToStringPrecision(ratio,5);
 		c.mInfo.add(info1);
-		if(ratio >= 4) {
+		if(ratio >= decisionRatio) {
 			if(sA.length == 1 && sB.length == 1) {
 				var colors = ["green","blue","red"];
 				var pcolor = 0;
@@ -1670,9 +1670,9 @@ kretha_FourTimesRule.speciesInClade = function(c) {
 	}
 	return l;
 };
-kretha_FourTimesRule.doRule = function(c) {
+kretha_FourTimesRule.doRule = function(c,decisionRatio) {
 	kretha_FourTimesRule.seqsInClade(c);
-	kretha_FourTimesRule.speciesInClade(c);
+	kretha_FourTimesRule.speciesInClade(c,decisionRatio);
 };
 var kretha_Graph = function(nodeInfo) {
 	var this1 = new haxe_ds__$HashMap_HashMapData();
@@ -1842,11 +1842,12 @@ kretha_Kretha.onMessage = function(e) {
 	var result = new haxe_ds_StringMap();
 	try {
 		var fileContent = js_Boot.__cast(e.data.txt , String);
+		var decisionRatio = js_Boot.__cast(e.data.decisionRatio , Float);
 		var reader = new kretha_FastaAlignmentReader();
 		var seqs = reader.readSequences(fileContent);
 		var g = kretha_NeighborJoining.run(seqs);
 		var c = kretha_MidPointRooter.root(g,seqs);
-		kretha_FourTimesRule.doRule(c);
+		kretha_FourTimesRule.doRule(c,decisionRatio);
 		var svg = c.getSVG();
 		if(__map_reserved["svg"] != null) {
 			result.setReserved("svg",svg);

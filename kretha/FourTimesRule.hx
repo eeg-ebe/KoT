@@ -164,7 +164,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
 }
 
 
-    public static function speciesInClade(c:Clade):List<List<Sequence>> {
+    public static function speciesInClade(c:Clade, decisionRatio:Float):List<List<Sequence>> {
         var l:List<List<Sequence>> = new List<List<Sequence>>();
         if (c.isTerminal()) {
             l.add(c.mConnectedInfo.get("seqNames"));
@@ -173,7 +173,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         }
         var s:List<List<List<Sequence>>> = new List<List<List<Sequence>>>();
         for (child in c.getChilds()) {
-            var sub:List<List<Sequence>> = speciesInClade(child);
+            var sub:List<List<Sequence>> = speciesInClade(child, decisionRatio);
             s.add(sub);
 //            c.addInfo("" + sub);
         }
@@ -189,7 +189,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         if (theta != -1) {
             var ratio:Float = k / theta;
             c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
-            if (ratio >= 4) {
+            if (ratio >= decisionRatio) {
                 if (sA.length == 1 && sB.length == 1) {
                     var colors = ["green", "blue", "red"];
                     var pcolor:Int = 0;
@@ -213,9 +213,9 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         return l;
     }
 
-    public static function doRule(c:Clade):Void {
+    public static function doRule(c:Clade, decisionRatio:Float):Void {
         seqsInClade(c);
-        speciesInClade(c);
+        speciesInClade(c, decisionRatio);
     }
 
 }
