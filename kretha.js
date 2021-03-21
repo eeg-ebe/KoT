@@ -1003,6 +1003,97 @@ kretha_DistanceMatrix.prototype = $extend(kretha_Matrix.prototype,{
 	}
 	,__class__: kretha_DistanceMatrix
 });
+var kretha_DistanceMatrixReader = function() {
+};
+kretha_DistanceMatrixReader.__name__ = true;
+kretha_DistanceMatrixReader.prototype = {
+	readMatrix: function(fileContent) {
+		var lines = fileContent.split("\n");
+		var names = new List();
+		var _g = 0;
+		while(_g < lines.length) {
+			var line = lines[_g];
+			++_g;
+			line = StringTools.trim(line);
+			if(line == "" || line.charAt(0) == "#") {
+				continue;
+			}
+			var name = line.split("\t")[0];
+			names.add(name);
+		}
+		var length = names.length;
+		var this1 = new Array(length);
+		var seqs = this1;
+		var lookup = new haxe_ds_StringMap();
+		var i = 0;
+		var _g_head = names.h;
+		while(_g_head != null) {
+			var val = _g_head.item;
+			_g_head = _g_head.next;
+			var name1 = val;
+			var n = new List();
+			n.add(name1);
+			var s = new kretha_Sequence(n,null);
+			seqs[i++] = s;
+			if(__map_reserved[name1] != null) {
+				lookup.setReserved(name1,s);
+			} else {
+				lookup.h[name1] = s;
+			}
+		}
+		var d = new kretha_DistanceMatrix(seqs);
+		var _g1 = 0;
+		while(_g1 < lines.length) {
+			var line1 = lines[_g1];
+			++_g1;
+			line1 = StringTools.trim(line1);
+			if(line1 == "" || line1.charAt(0) == "#") {
+				continue;
+			}
+			var name2 = line1.split("\t")[0];
+			var s1 = __map_reserved[name2] != null ? lookup.getReserved(name2) : lookup.h[name2];
+			var pos = -2;
+			var _g11 = 0;
+			var _g2 = line1.split("\t");
+			while(_g11 < _g2.length) {
+				var e = _g2[_g11];
+				++_g11;
+				++pos;
+				if(pos == -1) {
+					continue;
+				}
+				var s2 = seqs[pos];
+				var val1 = parseFloat(e);
+				if(s1 == s2) {
+					if(val1 != 0) {
+						throw new js__$Boot_HaxeError("Distance of identical objects must be 0!");
+					}
+				}
+				var _this = d.mNamePosLookup.values;
+				var key = s1.hashCode();
+				var pos1 = _this.h[key];
+				if(pos1 == null) {
+					throw new js__$Boot_HaxeError(Std.string(s1) + " not in map!");
+				}
+				var _this1 = d.mNamePosLookup.values;
+				var key1 = s2.hashCode();
+				var pos2 = _this1.h[key1];
+				if(pos2 == null) {
+					throw new js__$Boot_HaxeError(Std.string(s2) + " not in map!");
+				}
+				if(pos1 > pos2) {
+					var swap = pos1;
+					pos1 = pos2;
+					pos2 = swap;
+				}
+				d.mValues[pos1 + pos2 * d.mWidth] = val1;
+			}
+		}
+		console.log(d);
+		return d;
+	}
+	,__class__: kretha_DistanceMatrixReader
+};
 var kretha_IAlignmentReader = function() { };
 kretha_IAlignmentReader.__name__ = true;
 kretha_IAlignmentReader.prototype = {
@@ -1860,9 +1951,16 @@ kretha_Kretha.onMessage = function(e) {
 	try {
 		var fileContent = js_Boot.__cast(e.data.txt , String);
 		var decisionRatio = js_Boot.__cast(e.data.decisionRatio , Float);
-		var reader = new kretha_FastaAlignmentReader();
-		var seqs = reader.readSequences(fileContent);
-		var g = kretha_NeighborJoining.run(seqs);
+		var g = null;
+		if(fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
+			var reader = new kretha_FastaAlignmentReader();
+			var seqs = reader.readSequences(fileContent);
+			g = kretha_NeighborJoining.run(seqs);
+		} else {
+			var reader1 = new kretha_DistanceMatrixReader();
+			var d = reader1.readMatrix(fileContent);
+			g = kretha_NeighborJoining.runOnMatrix(d);
+		}
 		var c = kretha_MidPointRooter.root(g);
 		kretha_FourTimesRule.doRule(c,decisionRatio);
 		var svg = c.getSVG();

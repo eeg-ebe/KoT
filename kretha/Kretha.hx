@@ -51,9 +51,16 @@ class Kretha {
         try {
             var fileContent:String = cast(e.data.txt, String);
             var decisionRatio:Float = cast(e.data.decisionRatio, Float);
-            var reader:FastaAlignmentReader = new FastaAlignmentReader();
-            var seqs:Vector<Sequence> = reader.readSequences(fileContent);
-            var g = NeighborJoining.run(seqs);
+            var g:Graph<Sequence,Float> = null;
+            if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
+                var reader:FastaAlignmentReader = new FastaAlignmentReader();
+                var seqs:Vector<Sequence> = reader.readSequences(fileContent);
+                g = NeighborJoining.run(seqs);
+            } else {
+                var reader:DistanceMatrixReader = new DistanceMatrixReader();
+                var d:DistanceMatrix<Sequence> = reader.readMatrix(fileContent);
+                g = NeighborJoining.runOnMatrix(d);
+            }
             var c:Clade = MidPointRooter.root(g);
             FourTimesRule.doRule(c, decisionRatio);
             var svg:String = c.getSVG();
