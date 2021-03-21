@@ -44,7 +44,7 @@ class DistanceMatrixReader {
         for (name in names) {
             var n:List<String> = new List<String>();
             n.add(name);
-            var s:Sequence = new Sequence(n, null);
+            var s:Sequence = new Sequence(n, "");
             seqs[i++] = s;
             lookup.set(name, s);
         }
