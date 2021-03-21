@@ -2032,7 +2032,6 @@ kretha_NeighborJoining.run = function(seqs) {
 	haxe_ds__$Vector_Vector_$Impl_$.blit(seqs,0,r,0,seqs.length);
 	var endPoints = r;
 	var nrIndividuals = seqs.length;
-	var result = new kretha_Graph(endPoints);
 	var d = new kretha_DistanceMatrix(endPoints);
 	var _g = 0;
 	while(_g < endPoints.length) {
@@ -2085,88 +2084,93 @@ kretha_NeighborJoining.run = function(seqs) {
 			d.mValues[pos1 + pos2 * d.mWidth] = diff;
 		}
 	}
+	return kretha_NeighborJoining.runOnMatrix(d);
+};
+kretha_NeighborJoining.runOnMatrix = function(d) {
+	var endPoints = d.mNames;
+	var result = new kretha_Graph(endPoints);
 	var innerNumber = 0;
 	while(endPoints.length > 2) {
-		var this2 = new haxe_ds__$HashMap_HashMapData();
-		var r1 = this2;
-		var _g3 = 0;
-		while(_g3 < endPoints.length) {
-			var seq = endPoints[_g3];
-			++_g3;
+		var this1 = new haxe_ds__$HashMap_HashMapData();
+		var r = this1;
+		var _g = 0;
+		while(_g < endPoints.length) {
+			var seq = endPoints[_g];
+			++_g;
 			var sum = 0;
-			var _g12 = 0;
-			while(_g12 < endPoints.length) {
-				var otherSeq = endPoints[_g12];
-				++_g12;
+			var _g1 = 0;
+			while(_g1 < endPoints.length) {
+				var otherSeq = endPoints[_g1];
+				++_g1;
 				var ret = 0;
 				if(seq != otherSeq) {
-					var _this2 = d.mNamePosLookup.values;
-					var key2 = seq.hashCode();
-					var pos11 = _this2.h[key2];
-					if(pos11 == null) {
+					var _this = d.mNamePosLookup.values;
+					var key = seq.hashCode();
+					var pos1 = _this.h[key];
+					if(pos1 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq) + " not in map!");
 					}
-					var _this3 = d.mNamePosLookup.values;
-					var key3 = otherSeq.hashCode();
-					var pos21 = _this3.h[key3];
-					if(pos21 == null) {
+					var _this1 = d.mNamePosLookup.values;
+					var key1 = otherSeq.hashCode();
+					var pos2 = _this1.h[key1];
+					if(pos2 == null) {
 						throw new js__$Boot_HaxeError(Std.string(otherSeq) + " not in map!");
+					}
+					if(pos1 > pos2) {
+						var swap = pos1;
+						pos1 = pos2;
+						pos2 = swap;
+					}
+					ret = d.mValues[pos1 + pos2 * d.mWidth];
+				}
+				sum += ret;
+			}
+			var v = sum / (endPoints.length - 2);
+			var _this2 = r.keys;
+			var key2 = seq.hashCode();
+			_this2.h[key2] = seq;
+			var _this3 = r.values;
+			var key3 = seq.hashCode();
+			_this3.h[key3] = v;
+		}
+		var m = new kretha_DistanceMatrix(endPoints);
+		var _g2 = 0;
+		while(_g2 < endPoints.length) {
+			var seq1 = endPoints[_g2];
+			++_g2;
+			var _this4 = r.values;
+			var key4 = seq1.hashCode();
+			var r_i = _this4.h[key4];
+			var _g11 = 0;
+			while(_g11 < endPoints.length) {
+				var seq2 = endPoints[_g11];
+				++_g11;
+				if(seq1 == seq2) {
+					break;
+				}
+				var _this5 = r.values;
+				var key5 = seq2.hashCode();
+				var r_j = _this5.h[key5];
+				var ret1 = 0;
+				if(seq1 != seq2) {
+					var _this6 = d.mNamePosLookup.values;
+					var key6 = seq1.hashCode();
+					var pos11 = _this6.h[key6];
+					if(pos11 == null) {
+						throw new js__$Boot_HaxeError(Std.string(seq1) + " not in map!");
+					}
+					var _this7 = d.mNamePosLookup.values;
+					var key7 = seq2.hashCode();
+					var pos21 = _this7.h[key7];
+					if(pos21 == null) {
+						throw new js__$Boot_HaxeError(Std.string(seq2) + " not in map!");
 					}
 					if(pos11 > pos21) {
 						var swap1 = pos11;
 						pos11 = pos21;
 						pos21 = swap1;
 					}
-					ret = d.mValues[pos11 + pos21 * d.mWidth];
-				}
-				sum += ret;
-			}
-			var v = sum / (endPoints.length - 2);
-			var _this4 = r1.keys;
-			var key4 = seq.hashCode();
-			_this4.h[key4] = seq;
-			var _this5 = r1.values;
-			var key5 = seq.hashCode();
-			_this5.h[key5] = v;
-		}
-		var m = new kretha_DistanceMatrix(endPoints);
-		var _g4 = 0;
-		while(_g4 < endPoints.length) {
-			var seq1 = endPoints[_g4];
-			++_g4;
-			var _this6 = r1.values;
-			var key6 = seq1.hashCode();
-			var r_i = _this6.h[key6];
-			var _g13 = 0;
-			while(_g13 < endPoints.length) {
-				var seq2 = endPoints[_g13];
-				++_g13;
-				if(seq1 == seq2) {
-					break;
-				}
-				var _this7 = r1.values;
-				var key7 = seq2.hashCode();
-				var r_j = _this7.h[key7];
-				var ret1 = 0;
-				if(seq1 != seq2) {
-					var _this8 = d.mNamePosLookup.values;
-					var key8 = seq1.hashCode();
-					var pos12 = _this8.h[key8];
-					if(pos12 == null) {
-						throw new js__$Boot_HaxeError(Std.string(seq1) + " not in map!");
-					}
-					var _this9 = d.mNamePosLookup.values;
-					var key9 = seq2.hashCode();
-					var pos22 = _this9.h[key9];
-					if(pos22 == null) {
-						throw new js__$Boot_HaxeError(Std.string(seq2) + " not in map!");
-					}
-					if(pos12 > pos22) {
-						var swap2 = pos12;
-						pos12 = pos22;
-						pos22 = swap2;
-					}
-					ret1 = d.mValues[pos12 + pos22 * d.mWidth];
+					ret1 = d.mValues[pos11 + pos21 * d.mWidth];
 				}
 				var val = ret1 - (r_i + r_j);
 				if(seq1 == seq2) {
@@ -2174,81 +2178,81 @@ kretha_NeighborJoining.run = function(seqs) {
 						throw new js__$Boot_HaxeError("Distance of identical objects must be 0!");
 					}
 				}
-				var _this10 = m.mNamePosLookup.values;
-				var key10 = seq1.hashCode();
-				var pos13 = _this10.h[key10];
-				if(pos13 == null) {
+				var _this8 = m.mNamePosLookup.values;
+				var key8 = seq1.hashCode();
+				var pos12 = _this8.h[key8];
+				if(pos12 == null) {
 					throw new js__$Boot_HaxeError(Std.string(seq1) + " not in map!");
 				}
-				var _this11 = m.mNamePosLookup.values;
-				var key11 = seq2.hashCode();
-				var pos23 = _this11.h[key11];
-				if(pos23 == null) {
+				var _this9 = m.mNamePosLookup.values;
+				var key9 = seq2.hashCode();
+				var pos22 = _this9.h[key9];
+				if(pos22 == null) {
 					throw new js__$Boot_HaxeError(Std.string(seq2) + " not in map!");
 				}
-				if(pos13 > pos23) {
-					var swap3 = pos13;
-					pos13 = pos23;
-					pos23 = swap3;
+				if(pos12 > pos22) {
+					var swap2 = pos12;
+					pos12 = pos22;
+					pos22 = swap2;
 				}
-				m.mValues[pos13 + pos23 * m.mWidth] = val;
+				m.mValues[pos12 + pos22 * m.mWidth] = val;
 			}
 		}
 		var lowestSeq1 = endPoints[0];
 		var lowestSeq2 = endPoints[1];
 		var ret2 = 0;
 		if(lowestSeq1 != lowestSeq2) {
-			var _this12 = m.mNamePosLookup.values;
-			var key12 = lowestSeq1.hashCode();
-			var pos14 = _this12.h[key12];
-			if(pos14 == null) {
+			var _this10 = m.mNamePosLookup.values;
+			var key10 = lowestSeq1.hashCode();
+			var pos13 = _this10.h[key10];
+			if(pos13 == null) {
 				throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
 			}
-			var _this13 = m.mNamePosLookup.values;
-			var key13 = lowestSeq2.hashCode();
-			var pos24 = _this13.h[key13];
-			if(pos24 == null) {
+			var _this11 = m.mNamePosLookup.values;
+			var key11 = lowestSeq2.hashCode();
+			var pos23 = _this11.h[key11];
+			if(pos23 == null) {
 				throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
 			}
-			if(pos14 > pos24) {
-				var swap4 = pos14;
-				pos14 = pos24;
-				pos24 = swap4;
+			if(pos13 > pos23) {
+				var swap3 = pos13;
+				pos13 = pos23;
+				pos23 = swap3;
 			}
-			ret2 = m.mValues[pos14 + pos24 * m.mWidth];
+			ret2 = m.mValues[pos13 + pos23 * m.mWidth];
 		}
 		var lowestVal = ret2;
-		var _g5 = 0;
-		while(_g5 < endPoints.length) {
-			var seq11 = endPoints[_g5];
-			++_g5;
-			var _g14 = 0;
-			while(_g14 < endPoints.length) {
-				var seq21 = endPoints[_g14];
-				++_g14;
+		var _g3 = 0;
+		while(_g3 < endPoints.length) {
+			var seq11 = endPoints[_g3];
+			++_g3;
+			var _g12 = 0;
+			while(_g12 < endPoints.length) {
+				var seq21 = endPoints[_g12];
+				++_g12;
 				if(seq11 == seq21) {
 					break;
 				}
 				var ret3 = 0;
 				if(seq11 != seq21) {
-					var _this14 = m.mNamePosLookup.values;
-					var key14 = seq11.hashCode();
-					var pos15 = _this14.h[key14];
-					if(pos15 == null) {
+					var _this12 = m.mNamePosLookup.values;
+					var key12 = seq11.hashCode();
+					var pos14 = _this12.h[key12];
+					if(pos14 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq11) + " not in map!");
 					}
-					var _this15 = m.mNamePosLookup.values;
-					var key15 = seq21.hashCode();
-					var pos25 = _this15.h[key15];
-					if(pos25 == null) {
+					var _this13 = m.mNamePosLookup.values;
+					var key13 = seq21.hashCode();
+					var pos24 = _this13.h[key13];
+					if(pos24 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq21) + " not in map!");
 					}
-					if(pos15 > pos25) {
-						var swap5 = pos15;
-						pos15 = pos25;
-						pos25 = swap5;
+					if(pos14 > pos24) {
+						var swap4 = pos14;
+						pos14 = pos24;
+						pos24 = swap4;
 					}
-					ret3 = m.mValues[pos15 + pos25 * m.mWidth];
+					ret3 = m.mValues[pos14 + pos24 * m.mWidth];
 				}
 				var currentVal = ret3;
 				if(currentVal < lowestVal) {
@@ -2256,24 +2260,24 @@ kretha_NeighborJoining.run = function(seqs) {
 					lowestSeq2 = seq21;
 					var ret4 = 0;
 					if(lowestSeq1 != lowestSeq2) {
-						var _this16 = m.mNamePosLookup.values;
-						var key16 = lowestSeq1.hashCode();
-						var pos16 = _this16.h[key16];
-						if(pos16 == null) {
+						var _this14 = m.mNamePosLookup.values;
+						var key14 = lowestSeq1.hashCode();
+						var pos15 = _this14.h[key14];
+						if(pos15 == null) {
 							throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
 						}
-						var _this17 = m.mNamePosLookup.values;
-						var key17 = lowestSeq2.hashCode();
-						var pos26 = _this17.h[key17];
-						if(pos26 == null) {
+						var _this15 = m.mNamePosLookup.values;
+						var key15 = lowestSeq2.hashCode();
+						var pos25 = _this15.h[key15];
+						if(pos25 == null) {
 							throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
 						}
-						if(pos16 > pos26) {
-							var swap6 = pos16;
-							pos16 = pos26;
-							pos26 = swap6;
+						if(pos15 > pos25) {
+							var swap5 = pos15;
+							pos15 = pos25;
+							pos25 = swap5;
 						}
-						ret4 = m.mValues[pos16 + pos26 * m.mWidth];
+						ret4 = m.mValues[pos15 + pos25 * m.mWidth];
 					}
 					lowestVal = ret4;
 				}
@@ -2284,77 +2288,77 @@ kretha_NeighborJoining.run = function(seqs) {
 		var inner = new kretha_Sequence(l,null);
 		var ret5 = 0;
 		if(lowestSeq1 != lowestSeq2) {
-			var _this18 = d.mNamePosLookup.values;
-			var key18 = lowestSeq1.hashCode();
-			var pos17 = _this18.h[key18];
-			if(pos17 == null) {
+			var _this16 = d.mNamePosLookup.values;
+			var key16 = lowestSeq1.hashCode();
+			var pos16 = _this16.h[key16];
+			if(pos16 == null) {
 				throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
 			}
-			var _this19 = d.mNamePosLookup.values;
-			var key19 = lowestSeq2.hashCode();
-			var pos27 = _this19.h[key19];
-			if(pos27 == null) {
+			var _this17 = d.mNamePosLookup.values;
+			var key17 = lowestSeq2.hashCode();
+			var pos26 = _this17.h[key17];
+			if(pos26 == null) {
 				throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
 			}
-			if(pos17 > pos27) {
-				var swap7 = pos17;
-				pos17 = pos27;
-				pos27 = swap7;
+			if(pos16 > pos26) {
+				var swap6 = pos16;
+				pos16 = pos26;
+				pos26 = swap6;
 			}
-			ret5 = d.mValues[pos17 + pos27 * d.mWidth];
+			ret5 = d.mValues[pos16 + pos26 * d.mWidth];
 		}
 		var dist = ret5;
-		var _this20 = r1.values;
-		var key20 = lowestSeq1.hashCode();
-		var v_iu = dist + _this20.h[key20];
-		var _this21 = r1.values;
-		var key21 = lowestSeq2.hashCode();
-		var v_iu1 = (v_iu - _this21.h[key21]) / 2;
+		var _this18 = r.values;
+		var key18 = lowestSeq1.hashCode();
+		var v_iu = dist + _this18.h[key18];
+		var _this19 = r.values;
+		var key19 = lowestSeq2.hashCode();
+		var v_iu1 = (v_iu - _this19.h[key19]) / 2;
 		var v_ju = dist - v_iu1;
 		var gn = new kretha_GraphNode(inner);
-		var this3 = result.mNodes;
-		var _this22 = this3.keys;
-		var key22 = inner.hashCode();
-		_this22.h[key22] = inner;
-		var _this23 = this3.values;
-		var key23 = inner.hashCode();
-		_this23.h[key23] = gn;
-		var _this24 = result.mNodes.values;
-		var key24 = lowestSeq1.hashCode();
-		var v1 = _this24.h[key24];
+		var this2 = result.mNodes;
+		var _this20 = this2.keys;
+		var key20 = inner.hashCode();
+		_this20.h[key20] = inner;
+		var _this21 = this2.values;
+		var key21 = inner.hashCode();
+		_this21.h[key21] = gn;
+		var _this22 = result.mNodes.values;
+		var key22 = lowestSeq1.hashCode();
+		var v1 = _this22.h[key22];
 		if(v1 == null) {
 			throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in graph!");
 		}
-		var _this25 = result.mNodes.values;
-		var key25 = inner.hashCode();
-		var v2 = _this25.h[key25];
+		var _this23 = result.mNodes.values;
+		var key23 = inner.hashCode();
+		var v2 = _this23.h[key23];
 		if(v2 == null) {
 			throw new js__$Boot_HaxeError(Std.string(inner) + " not in graph!");
 		}
 		v1.addEdge(v2,v_iu1);
 		v2.addEdge(v1,v_iu1);
-		var _this26 = result.mNodes.values;
-		var key26 = lowestSeq2.hashCode();
-		var v11 = _this26.h[key26];
+		var _this24 = result.mNodes.values;
+		var key24 = lowestSeq2.hashCode();
+		var v11 = _this24.h[key24];
 		if(v11 == null) {
 			throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in graph!");
 		}
-		var _this27 = result.mNodes.values;
-		var key27 = inner.hashCode();
-		var v21 = _this27.h[key27];
+		var _this25 = result.mNodes.values;
+		var key25 = inner.hashCode();
+		var v21 = _this25.h[key25];
 		if(v21 == null) {
 			throw new js__$Boot_HaxeError(Std.string(inner) + " not in graph!");
 		}
 		v11.addEdge(v21,v_ju);
 		v21.addEdge(v11,v_ju);
-		var length1 = endPoints.length - 1;
-		var this4 = new Array(length1);
-		var endPoints_new = this4;
+		var length = endPoints.length - 1;
+		var this3 = new Array(length);
+		var endPoints_new = this3;
 		var idx = 0;
-		var _g6 = 0;
-		while(_g6 < endPoints.length) {
-			var seq3 = endPoints[_g6];
-			++_g6;
+		var _g4 = 0;
+		while(_g4 < endPoints.length) {
+			var seq3 = endPoints[_g4];
+			++_g4;
 			if(seq3 == lowestSeq1 || seq3 == lowestSeq2) {
 				continue;
 			}
@@ -2362,14 +2366,14 @@ kretha_NeighborJoining.run = function(seqs) {
 		}
 		endPoints_new[idx] = inner;
 		var d_new = new kretha_DistanceMatrix(endPoints_new);
-		var _g7 = 0;
-		while(_g7 < endPoints_new.length) {
-			var seq12 = endPoints_new[_g7];
-			++_g7;
-			var _g15 = 0;
-			while(_g15 < endPoints_new.length) {
-				var seq22 = endPoints_new[_g15];
-				++_g15;
+		var _g5 = 0;
+		while(_g5 < endPoints_new.length) {
+			var seq12 = endPoints_new[_g5];
+			++_g5;
+			var _g13 = 0;
+			while(_g13 < endPoints_new.length) {
+				var seq22 = endPoints_new[_g13];
+				++_g13;
 				if(seq12 == seq22) {
 					break;
 				}
@@ -2377,11 +2381,32 @@ kretha_NeighborJoining.run = function(seqs) {
 					var k = seq12 == inner ? seq22 : seq12;
 					var ret6 = 0;
 					if(lowestSeq1 != k) {
+						var _this26 = d.mNamePosLookup.values;
+						var key26 = lowestSeq1.hashCode();
+						var pos17 = _this26.h[key26];
+						if(pos17 == null) {
+							throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
+						}
+						var _this27 = d.mNamePosLookup.values;
+						var key27 = k.hashCode();
+						var pos27 = _this27.h[key27];
+						if(pos27 == null) {
+							throw new js__$Boot_HaxeError(Std.string(k) + " not in map!");
+						}
+						if(pos17 > pos27) {
+							var swap7 = pos17;
+							pos17 = pos27;
+							pos27 = swap7;
+						}
+						ret6 = d.mValues[pos17 + pos27 * d.mWidth];
+					}
+					var ret7 = 0;
+					if(lowestSeq2 != k) {
 						var _this28 = d.mNamePosLookup.values;
-						var key28 = lowestSeq1.hashCode();
+						var key28 = lowestSeq2.hashCode();
 						var pos18 = _this28.h[key28];
 						if(pos18 == null) {
-							throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
+							throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
 						}
 						var _this29 = d.mNamePosLookup.values;
 						var key29 = k.hashCode();
@@ -2394,49 +2419,28 @@ kretha_NeighborJoining.run = function(seqs) {
 							pos18 = pos28;
 							pos28 = swap8;
 						}
-						ret6 = d.mValues[pos18 + pos28 * d.mWidth];
+						ret7 = d.mValues[pos18 + pos28 * d.mWidth];
 					}
-					var ret7 = 0;
-					if(lowestSeq2 != k) {
+					var ret8 = 0;
+					if(lowestSeq1 != lowestSeq2) {
 						var _this30 = d.mNamePosLookup.values;
-						var key30 = lowestSeq2.hashCode();
+						var key30 = lowestSeq1.hashCode();
 						var pos19 = _this30.h[key30];
 						if(pos19 == null) {
-							throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
+							throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
 						}
 						var _this31 = d.mNamePosLookup.values;
-						var key31 = k.hashCode();
+						var key31 = lowestSeq2.hashCode();
 						var pos29 = _this31.h[key31];
 						if(pos29 == null) {
-							throw new js__$Boot_HaxeError(Std.string(k) + " not in map!");
+							throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
 						}
 						if(pos19 > pos29) {
 							var swap9 = pos19;
 							pos19 = pos29;
 							pos29 = swap9;
 						}
-						ret7 = d.mValues[pos19 + pos29 * d.mWidth];
-					}
-					var ret8 = 0;
-					if(lowestSeq1 != lowestSeq2) {
-						var _this32 = d.mNamePosLookup.values;
-						var key32 = lowestSeq1.hashCode();
-						var pos110 = _this32.h[key32];
-						if(pos110 == null) {
-							throw new js__$Boot_HaxeError(Std.string(lowestSeq1) + " not in map!");
-						}
-						var _this33 = d.mNamePosLookup.values;
-						var key33 = lowestSeq2.hashCode();
-						var pos210 = _this33.h[key33];
-						if(pos210 == null) {
-							throw new js__$Boot_HaxeError(Std.string(lowestSeq2) + " not in map!");
-						}
-						if(pos110 > pos210) {
-							var swap10 = pos110;
-							pos110 = pos210;
-							pos210 = swap10;
-						}
-						ret8 = d.mValues[pos110 + pos210 * d.mWidth];
+						ret8 = d.mValues[pos19 + pos29 * d.mWidth];
 					}
 					var dist1 = (ret6 + ret7 - ret8) / 2;
 					if(seq12 == seq22) {
@@ -2444,45 +2448,45 @@ kretha_NeighborJoining.run = function(seqs) {
 							throw new js__$Boot_HaxeError("Distance of identical objects must be 0!");
 						}
 					}
-					var _this34 = d_new.mNamePosLookup.values;
-					var key34 = seq12.hashCode();
-					var pos111 = _this34.h[key34];
-					if(pos111 == null) {
+					var _this32 = d_new.mNamePosLookup.values;
+					var key32 = seq12.hashCode();
+					var pos110 = _this32.h[key32];
+					if(pos110 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq12) + " not in map!");
 					}
-					var _this35 = d_new.mNamePosLookup.values;
-					var key35 = seq22.hashCode();
-					var pos211 = _this35.h[key35];
-					if(pos211 == null) {
+					var _this33 = d_new.mNamePosLookup.values;
+					var key33 = seq22.hashCode();
+					var pos210 = _this33.h[key33];
+					if(pos210 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq22) + " not in map!");
 					}
-					if(pos111 > pos211) {
-						var swap11 = pos111;
-						pos111 = pos211;
-						pos211 = swap11;
+					if(pos110 > pos210) {
+						var swap10 = pos110;
+						pos110 = pos210;
+						pos210 = swap10;
 					}
-					d_new.mValues[pos111 + pos211 * d_new.mWidth] = dist1;
+					d_new.mValues[pos110 + pos210 * d_new.mWidth] = dist1;
 				} else {
 					var ret9 = 0;
 					if(seq12 != seq22) {
-						var _this36 = d.mNamePosLookup.values;
-						var key36 = seq12.hashCode();
-						var pos112 = _this36.h[key36];
-						if(pos112 == null) {
+						var _this34 = d.mNamePosLookup.values;
+						var key34 = seq12.hashCode();
+						var pos111 = _this34.h[key34];
+						if(pos111 == null) {
 							throw new js__$Boot_HaxeError(Std.string(seq12) + " not in map!");
 						}
-						var _this37 = d.mNamePosLookup.values;
-						var key37 = seq22.hashCode();
-						var pos212 = _this37.h[key37];
-						if(pos212 == null) {
+						var _this35 = d.mNamePosLookup.values;
+						var key35 = seq22.hashCode();
+						var pos211 = _this35.h[key35];
+						if(pos211 == null) {
 							throw new js__$Boot_HaxeError(Std.string(seq22) + " not in map!");
 						}
-						if(pos112 > pos212) {
-							var swap12 = pos112;
-							pos112 = pos212;
-							pos212 = swap12;
+						if(pos111 > pos211) {
+							var swap11 = pos111;
+							pos111 = pos211;
+							pos211 = swap11;
 						}
-						ret9 = d.mValues[pos112 + pos212 * d.mWidth];
+						ret9 = d.mValues[pos111 + pos211 * d.mWidth];
 					}
 					var dist2 = ret9;
 					if(seq12 == seq22) {
@@ -2490,24 +2494,24 @@ kretha_NeighborJoining.run = function(seqs) {
 							throw new js__$Boot_HaxeError("Distance of identical objects must be 0!");
 						}
 					}
-					var _this38 = d_new.mNamePosLookup.values;
-					var key38 = seq12.hashCode();
-					var pos113 = _this38.h[key38];
-					if(pos113 == null) {
+					var _this36 = d_new.mNamePosLookup.values;
+					var key36 = seq12.hashCode();
+					var pos112 = _this36.h[key36];
+					if(pos112 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq12) + " not in map!");
 					}
-					var _this39 = d_new.mNamePosLookup.values;
-					var key39 = seq22.hashCode();
-					var pos213 = _this39.h[key39];
-					if(pos213 == null) {
+					var _this37 = d_new.mNamePosLookup.values;
+					var key37 = seq22.hashCode();
+					var pos212 = _this37.h[key37];
+					if(pos212 == null) {
 						throw new js__$Boot_HaxeError(Std.string(seq22) + " not in map!");
 					}
-					if(pos113 > pos213) {
-						var swap13 = pos113;
-						pos113 = pos213;
-						pos213 = swap13;
+					if(pos112 > pos212) {
+						var swap12 = pos112;
+						pos112 = pos212;
+						pos212 = swap12;
 					}
-					d_new.mValues[pos113 + pos213 * d_new.mWidth] = dist2;
+					d_new.mValues[pos112 + pos212 * d_new.mWidth] = dist2;
 				}
 			}
 		}
@@ -2518,37 +2522,37 @@ kretha_NeighborJoining.run = function(seqs) {
 	var x2 = endPoints[1];
 	var ret10 = 0;
 	if(x1 != x2) {
-		var _this40 = d.mNamePosLookup.values;
-		var key40 = x1.hashCode();
-		var pos114 = _this40.h[key40];
-		if(pos114 == null) {
+		var _this38 = d.mNamePosLookup.values;
+		var key38 = x1.hashCode();
+		var pos113 = _this38.h[key38];
+		if(pos113 == null) {
 			throw new js__$Boot_HaxeError(Std.string(x1) + " not in map!");
 		}
-		var _this41 = d.mNamePosLookup.values;
-		var key41 = x2.hashCode();
-		var pos214 = _this41.h[key41];
-		if(pos214 == null) {
+		var _this39 = d.mNamePosLookup.values;
+		var key39 = x2.hashCode();
+		var pos213 = _this39.h[key39];
+		if(pos213 == null) {
 			throw new js__$Boot_HaxeError(Std.string(x2) + " not in map!");
 		}
-		if(pos114 > pos214) {
-			var swap14 = pos114;
-			pos114 = pos214;
-			pos214 = swap14;
+		if(pos113 > pos213) {
+			var swap13 = pos113;
+			pos113 = pos213;
+			pos213 = swap13;
 		}
-		ret10 = d.mValues[pos114 + pos214 * d.mWidth];
+		ret10 = d.mValues[pos113 + pos213 * d.mWidth];
 	}
 	var dist3 = ret10;
 	var x = endPoints[0];
 	var y = endPoints[1];
-	var _this42 = result.mNodes.values;
-	var key42 = x.hashCode();
-	var v12 = _this42.h[key42];
+	var _this40 = result.mNodes.values;
+	var key40 = x.hashCode();
+	var v12 = _this40.h[key40];
 	if(v12 == null) {
 		throw new js__$Boot_HaxeError(Std.string(x) + " not in graph!");
 	}
-	var _this43 = result.mNodes.values;
-	var key43 = y.hashCode();
-	var v22 = _this43.h[key43];
+	var _this41 = result.mNodes.values;
+	var key41 = y.hashCode();
+	var v22 = _this41.h[key41];
 	if(v22 == null) {
 		throw new js__$Boot_HaxeError(Std.string(y) + " not in graph!");
 	}

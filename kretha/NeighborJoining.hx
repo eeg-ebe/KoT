@@ -28,7 +28,6 @@ class NeighborJoining {
     public static function run(seqs:Vector<Sequence>):Graph<Sequence,Float> {
         var endPoints:Vector<Sequence> = seqs.copy();
         var nrIndividuals:Int = seqs.length;
-        var result:Graph<Sequence,Float> = new Graph<Sequence,Float>(endPoints);
 
         var d:DistanceMatrix<Sequence> = new DistanceMatrix<Sequence>(endPoints);
         for (ind1 in endPoints) {
@@ -40,6 +39,12 @@ class NeighborJoining {
                 d.set(ind1, ind2, diff);
             }
         }
+        return runOnMatrix(d);
+    }
+
+    public static function runOnMatrix(d:DistanceMatrix<Sequence>):Graph<Sequence,Float> {    
+        var endPoints:Vector<Sequence> = d.getNames(); //seqs.copy();
+        var result:Graph<Sequence,Float> = new Graph<Sequence,Float>(endPoints);
 
         var innerNumber:Int = 0;
         while (endPoints.length > 2) {
