@@ -1763,6 +1763,9 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 	return l;
 };
 kretha_FourTimesRule.doRule = function(c,decisionRatio) {
+	if(kretha_FourTimesRule.distanceMatrix != null) {
+		return;
+	}
 	kretha_FourTimesRule.seqsInClade(c);
 	console.log("" + Std.string(kretha_FourTimesRule.speciesInClade(c,decisionRatio)));
 };
@@ -1960,6 +1963,7 @@ kretha_Kretha.onMessage = function(e) {
 			var reader1 = new kretha_DistanceMatrixReader();
 			var d = reader1.readMatrix(fileContent);
 			g = kretha_NeighborJoining.runOnMatrix(d);
+			kretha_FourTimesRule.distanceMatrix = d;
 		}
 		var c = kretha_MidPointRooter.root(g);
 		kretha_FourTimesRule.doRule(c,decisionRatio);

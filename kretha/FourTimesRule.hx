@@ -22,6 +22,8 @@ package kretha;
  */
 class FourTimesRule {
 
+    public static var distanceMatrix:DistanceMatrix<Sequence> = null;
+
     public static inline function calcPairwiseDifference(a1:Sequence, a2:Sequence):Float {
         var res:Float = a1.getDifferenceScore(a2);
         return res / a1.getLength();
@@ -212,6 +214,9 @@ public static function floatToStringPrecision(n:Float, prec:Int){
     }
 
     public static function doRule(c:Clade, decisionRatio:Float):Void {
+        if (distanceMatrix != null) {
+            return;
+        }
         seqsInClade(c);
         trace("" + speciesInClade(c, decisionRatio));
     }

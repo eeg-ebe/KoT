@@ -60,6 +60,7 @@ class Kretha {
                 var reader:DistanceMatrixReader = new DistanceMatrixReader();
                 var d:DistanceMatrix<Sequence> = reader.readMatrix(fileContent);
                 g = NeighborJoining.runOnMatrix(d);
+                FourTimesRule.distanceMatrix = d;
             }
             var c:Clade = MidPointRooter.root(g);
             FourTimesRule.doRule(c, decisionRatio);
