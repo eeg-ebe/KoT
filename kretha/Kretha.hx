@@ -54,7 +54,7 @@ class Kretha {
             var reader:FastaAlignmentReader = new FastaAlignmentReader();
             var seqs:Vector<Sequence> = reader.readSequences(fileContent);
             var g = NeighborJoining.run(seqs);
-            var c:Clade = MidPointRooter.root(g, seqs);
+            var c:Clade = MidPointRooter.root(g);
             FourTimesRule.doRule(c, decisionRatio);
             var svg:String = c.getSVG();
             result.set("svg", svg);

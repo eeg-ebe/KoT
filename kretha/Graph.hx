@@ -43,6 +43,18 @@ class Graph<V:{function hashCode():Int;function getNodeName():String;},E> {
         }
     }
 
+    public function getLeafs():List<V> {
+        var result:List<V> = new List<V>();
+        for (node in mNodes) {
+            var ele:V = node.getElement();
+            if (node.countConnections() >= 2) {
+                continue; // not a leaf
+            }
+            result.add(ele);
+        }
+        return result;
+    }
+
     /**
      * Add a node to this graph.
      */

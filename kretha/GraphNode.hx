@@ -93,4 +93,8 @@ class GraphNode<V,E> {
         return result;
     }
 
+    public inline function countConnections():Int {
+        return mConnectedEdges.length;
+    }
+
 }

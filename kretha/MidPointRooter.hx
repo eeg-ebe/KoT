@@ -45,9 +45,9 @@ class MidPointRooter {
         return { path : path, l : bestLength };
     }
 
-    public static function findLongestDistance(g:Graph<Sequence,Float>, seqs:Vector<Sequence>):{ path : List<Sequence>, l : Float } {
+    public static function findLongestDistance(g:Graph<Sequence,Float>):{ path : List<Sequence>, l : Float } {
         var result:{ path : List<Sequence>, l : Float } = null;
-        for (seq in seqs) {
+        for (seq in g.getLeafs()) {
             var alternativeResult:{ path : List<Sequence>, l : Float } = getLongestPath(g, seq, null);
             if (result == null || result.l < alternativeResult.l) {
                 result = alternativeResult;
@@ -56,8 +56,8 @@ class MidPointRooter {
         return result;
     }
 
-    public static function findMidPoint(g:Graph<Sequence,Float>, seqs:Vector<Sequence>):{ n1:Sequence, n2:Sequence, a:Float, b:Float } {
-        var result:{ path : List<Sequence>, l : Float } = findLongestDistance(g, seqs);
+    public static function findMidPoint(g:Graph<Sequence,Float>):{ n1:Sequence, n2:Sequence, a:Float, b:Float } {
+        var result:{ path : List<Sequence>, l : Float } = findLongestDistance(g);
         trace("Longest path: " + result.path + " with length " + result.l);
         var midLen:Float = result.l / 2;
         var sum:Float = 0, conLen:Float = 0;
@@ -82,8 +82,8 @@ class MidPointRooter {
         };
     }
 
-    public static function root(g:Graph<Sequence,Float>, seqs:Vector<Sequence>):Clade {
-        var midPoint:{ n1:Sequence, n2:Sequence, a:Float, b:Float } = findMidPoint(g, seqs);
+    public static function root(g:Graph<Sequence,Float>):Clade {
+        var midPoint:{ n1:Sequence, n2:Sequence, a:Float, b:Float } = findMidPoint(g);
         trace("midPoint: " + midPoint);
         var rootClade:Clade = new Clade();
         rootClade.addInfo("Root");

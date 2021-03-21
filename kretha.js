@@ -1696,7 +1696,20 @@ var kretha_Graph = function(nodeInfo) {
 };
 kretha_Graph.__name__ = true;
 kretha_Graph.prototype = {
-	addNode: function(ele) {
+	getLeafs: function() {
+		var result = new List();
+		var node = this.mNodes.values.iterator();
+		while(node.hasNext()) {
+			var node1 = node.next();
+			var ele = node1.mEleObject;
+			if(node1.mConnectedEdges.length >= 2) {
+				continue;
+			}
+			result.add(ele);
+		}
+		return result;
+	}
+	,addNode: function(ele) {
 		var gn = new kretha_GraphNode(ele);
 		var this1 = this.mNodes;
 		var _this = this1.keys;
@@ -1835,6 +1848,9 @@ kretha_GraphNode.prototype = {
 		}
 		return result;
 	}
+	,countConnections: function() {
+		return this.mConnectedEdges.length;
+	}
 	,__class__: kretha_GraphNode
 };
 var kretha_Kretha = function() { };
@@ -1847,7 +1863,7 @@ kretha_Kretha.onMessage = function(e) {
 		var reader = new kretha_FastaAlignmentReader();
 		var seqs = reader.readSequences(fileContent);
 		var g = kretha_NeighborJoining.run(seqs);
-		var c = kretha_MidPointRooter.root(g,seqs);
+		var c = kretha_MidPointRooter.root(g);
 		kretha_FourTimesRule.doRule(c,decisionRatio);
 		var svg = c.getSVG();
 		if(__map_reserved["svg"] != null) {
@@ -1904,12 +1920,13 @@ kretha_MidPointRooter.getLongestPath = function(g,current,commingFrom) {
 	path.add(current);
 	return { path : path, l : bestLength};
 };
-kretha_MidPointRooter.findLongestDistance = function(g,seqs) {
+kretha_MidPointRooter.findLongestDistance = function(g) {
 	var result = null;
-	var _g = 0;
-	while(_g < seqs.length) {
-		var seq = seqs[_g];
-		++_g;
+	var _g_head = g.getLeafs().h;
+	while(_g_head != null) {
+		var val = _g_head.item;
+		_g_head = _g_head.next;
+		var seq = val;
 		var alternativeResult = kretha_MidPointRooter.getLongestPath(g,seq,null);
 		if(result == null || result.l < alternativeResult.l) {
 			result = alternativeResult;
@@ -1917,8 +1934,8 @@ kretha_MidPointRooter.findLongestDistance = function(g,seqs) {
 	}
 	return result;
 };
-kretha_MidPointRooter.findMidPoint = function(g,seqs) {
-	var result = kretha_MidPointRooter.findLongestDistance(g,seqs);
+kretha_MidPointRooter.findMidPoint = function(g) {
+	var result = kretha_MidPointRooter.findLongestDistance(g);
 	console.log("Longest path: " + Std.string(result.path) + " with length " + result.l);
 	var midLen = result.l / 2;
 	var sum = 0;
@@ -1949,8 +1966,8 @@ kretha_MidPointRooter.findMidPoint = function(g,seqs) {
 	}
 	return { n1 : oldS, n2 : newS, a : conLen - (sum - midLen), b : sum - midLen};
 };
-kretha_MidPointRooter.root = function(g,seqs) {
-	var midPoint = kretha_MidPointRooter.findMidPoint(g,seqs);
+kretha_MidPointRooter.root = function(g) {
+	var midPoint = kretha_MidPointRooter.findMidPoint(g);
 	console.log("midPoint: " + Std.string(midPoint));
 	var rootClade = new kretha_Clade();
 	rootClade.mInfo.add("Root");
