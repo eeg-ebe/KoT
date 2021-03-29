@@ -23,18 +23,23 @@ package kretha;
 class CladeColorer {
 
     private static var colors:Array<String> = [
-        "#ff0000",
-        "#00ffff",
-        "#ff8000",
-        "#0080ff",
-        "#ffff00",
-        "#0000ff",
-        "#80ff00",
-        "#8000ff",
-        "#00ff00",
-        "#ff00ff",
-        "#00ff80",
-        "#ff0080",
+        "#FF0000",
+        "#00FF00",
+        "#0000FF",
+        "#CC0000",
+        "#00CC00",
+        "#0000CC",
+        "#CC6600",
+        "#99CC00",
+        "#006699",
+        "#CC9900",
+        "#00CC99",
+        "#CC00CC",
+        "#CC6699",
+        "#009933",
+        "#0033CC",
+        "#6600FF",
+        "#3333FF",
     ];
 
     private static inline function getColor(i:Int):String {
