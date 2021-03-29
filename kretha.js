@@ -1988,7 +1988,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 };
 kretha_FourTimesRule.doRule = function(c,decisionRatio) {
 	kretha_FourTimesRule.seqsInClade(c);
-	console.log("" + Std.string(kretha_FourTimesRule.speciesInClade(c,decisionRatio)));
+	return kretha_FourTimesRule.speciesInClade(c,decisionRatio);
 };
 var kretha_Graph = function(nodeInfo) {
 	var this1 = new haxe_ds__$HashMap_HashMapData();
@@ -2187,12 +2187,18 @@ kretha_Kretha.onMessage = function(e) {
 			kretha_FourTimesRule.distanceMatrix = d;
 		}
 		var c = kretha_MidPointRooter.root(g);
-		kretha_FourTimesRule.doRule(c,decisionRatio);
+		var s = kretha_FourTimesRule.doRule(c,decisionRatio);
+		var resL = kretha_Kretha.formatSpeciesList(s);
 		var svg = c.getSVG();
 		if(__map_reserved["svg"] != null) {
 			result.setReserved("svg",svg);
 		} else {
 			result.h["svg"] = svg;
+		}
+		if(__map_reserved["putativeSpecies"] != null) {
+			result.setReserved("putativeSpecies",resL);
+		} else {
+			result.h["putativeSpecies"] = resL;
 		}
 	} catch( e1 ) {
 		if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
@@ -2203,8 +2209,38 @@ kretha_Kretha.onMessage = function(e) {
 		} else {
 			result.h["svg"] = value;
 		}
+		if(__map_reserved["putativeSpecies"] != null) {
+			result.setReserved("putativeSpecies","");
+		} else {
+			result.h["putativeSpecies"] = "";
+		}
 	}
 	kretha_Kretha.workerScope.postMessage(result);
+};
+kretha_Kretha.formatSpeciesList = function(s) {
+	var result = new List();
+	var i = 1;
+	var _g_head = s.h;
+	while(_g_head != null) {
+		var val = _g_head.item;
+		_g_head = _g_head.next;
+		var subList = val;
+		var _g_head1 = subList.h;
+		while(_g_head1 != null) {
+			var val1 = _g_head1.item;
+			_g_head1 = _g_head1.next;
+			var e = val1;
+			var _g_head2 = e.mNames.h;
+			while(_g_head2 != null) {
+				var val2 = _g_head2.item;
+				_g_head2 = _g_head2.next;
+				var name = val2;
+				result.add(name + "\t" + i);
+			}
+		}
+		++i;
+	}
+	return result.join("\n");
 };
 kretha_Kretha.main = function() {
 	kretha_Kretha.workerScope = self;

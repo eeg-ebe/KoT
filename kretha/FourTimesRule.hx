@@ -219,9 +219,9 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         return l;
     }
 
-    public static function doRule(c:Clade, decisionRatio:Float):Void {
+    public static function doRule(c:Clade, decisionRatio:Float):List<List<Sequence>> {
         seqsInClade(c);
-        trace("" + speciesInClade(c, decisionRatio));
+        return speciesInClade(c, decisionRatio);
     }
 
 }

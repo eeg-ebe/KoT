@@ -37,6 +37,7 @@
             <div id="downloadDiv"></div>
             <div id="result" style="display: none; width: 100%; font-family: Courier New">
             </div>
+            <textarea id="result2" style="display: none; width: 100%;"></textarea>
             <p><br></p>
             <div class="navigation">
                 <a href="index.html">Back to startpage</a>
@@ -56,6 +57,9 @@ function calculate() {
     resultEle.innerHTML = "Calculating ... Please wait ...";
     resultEle.style.display = "block";
 
+    var resultEle2 = document.getElementById('result2');
+    resultEle2.style.display = "block";
+
     var ratioTxt = document.getElementById('decisionRatio').value;
     var ratio = parseFloat(ratioTxt);
 
@@ -63,6 +67,7 @@ function calculate() {
     worker.addEventListener("message", function(e) {
         data = e.data;
         resultEle.innerHTML = data.h.svg;
+        resultEle2.innerHTML = data.h.putativeSpecies;
         addDownloadLink();
     });
 

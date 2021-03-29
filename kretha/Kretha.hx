@@ -63,16 +63,33 @@ class Kretha {
                 FourTimesRule.distanceMatrix = d;
             }
             var c:Clade = MidPointRooter.root(g);
-            FourTimesRule.doRule(c, decisionRatio);
+            var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio);
+            var resL:String = formatSpeciesList(s);
             var svg:String = c.getSVG();
             result.set("svg", svg);
+            result.set("putativeSpecies", resL);
         } catch(e:Dynamic) {
             trace(e);
             result.set("svg", "The following error occurred: " + e);
+            result.set("putativeSpecies", "");
         }
         workerScope.postMessage(result);
     }
     #end
+
+    public static function formatSpeciesList(s:List<List<Sequence>>):String {
+        var result:List<String> = new List<String>();
+        var i:Int = 1;
+        for (subList in s) {
+            for (e in subList) {
+                for (name in e.getNames()) {
+                    result.add(name + "\t" + i);
+                }
+            }
+            ++i;
+        }
+        return result.join("\n");
+    }
 
     public static function main() {
         #if sys
