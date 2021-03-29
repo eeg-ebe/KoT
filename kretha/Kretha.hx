@@ -65,6 +65,7 @@ class Kretha {
             var c:Clade = MidPointRooter.root(g);
             var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio);
             var resL:String = formatSpeciesList(s);
+            CladeColorer.colorClades(c, s);
             var svg:String = c.getSVG();
             result.set("svg", svg);
             result.set("putativeSpecies", resL);

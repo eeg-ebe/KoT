@@ -832,6 +832,58 @@ kretha_Clade.prototype = {
 	}
 	,__class__: kretha_Clade
 };
+var kretha_CladeColorer = function() { };
+kretha_CladeColorer.__name__ = true;
+kretha_CladeColorer.getColor = function(i) {
+	var ii = i % kretha_CladeColorer.colors.length;
+	return kretha_CladeColorer.colors[ii];
+};
+kretha_CladeColorer.colorClade = function(c,i) {
+	var ii = i % kretha_CladeColorer.colors.length;
+	var color = kretha_CladeColorer.colors[ii];
+	c.colorfy(color);
+};
+kretha_CladeColorer.findClade = function(c,l) {
+	var tmp;
+	var _this = c.mConnectedInfo;
+	if((__map_reserved["psppl"] != null ? _this.getReserved("psppl") : _this.h["psppl"]) != l) {
+		var _this1 = c.mConnectedInfo;
+		tmp = (__map_reserved["seqNames"] != null ? _this1.getReserved("seqNames") : _this1.h["seqNames"]) == l;
+	} else {
+		tmp = true;
+	}
+	if(tmp) {
+		return c;
+	}
+	var _g_head = c.mChilds.h;
+	while(_g_head != null) {
+		var val = _g_head.item;
+		_g_head = _g_head.next;
+		var child = val;
+		var ccc = kretha_CladeColorer.findClade(child,l);
+		if(ccc != null) {
+			return ccc;
+		}
+	}
+	return null;
+};
+kretha_CladeColorer.colorClades = function(c,l) {
+	var i = 0;
+	var _g_head = l.h;
+	while(_g_head != null) {
+		var val = _g_head.item;
+		_g_head = _g_head.next;
+		var ll = val;
+		console.log("=== " + Std.string(ll));
+		var cc = kretha_CladeColorer.findClade(c,ll);
+		if(cc != null) {
+			console.log(cc);
+			var ii = i++ % kretha_CladeColorer.colors.length;
+			var color = kretha_CladeColorer.colors[ii];
+			cc.colorfy(color);
+		}
+	}
+};
 var kretha_Matrix = function(w,h) {
 	if(w < 1) {
 		throw new js__$Boot_HaxeError("Width must be bigger then 0!");
@@ -1656,10 +1708,11 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var _this = c.mConnectedInfo;
 		l.add(__map_reserved["seqNames"] != null ? _this.getReserved("seqNames") : _this.h["seqNames"]);
 		var _this1 = c.mConnectedInfo;
-		if(__map_reserved["species"] != null) {
-			_this1.setReserved("species",l);
+		var value = l.first();
+		if(__map_reserved["psppl"] != null) {
+			_this1.setReserved("psppl",value);
 		} else {
-			_this1.h["species"] = l;
+			_this1.h["psppl"] = value;
 		}
 		return l;
 	}
@@ -1954,28 +2007,18 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var info1 = kretha_FourTimesRule.floatToStringPrecision(k,5) + "/" + kretha_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kretha_FourTimesRule.floatToStringPrecision(ratio,5);
 		c.mInfo.add(info1);
 		if(ratio >= decisionRatio) {
-			var colors = ["green","blue","red"];
-			var pcolor = 0;
-			var _g_head7 = c.mChilds.h;
+			var _g_head7 = sA.h;
 			while(_g_head7 != null) {
 				var val9 = _g_head7.item;
 				_g_head7 = _g_head7.next;
-				var child1 = val9;
-				child1.colorfy(colors[pcolor]);
-				pcolor = (pcolor + 1) % colors.length;
+				var n11 = val9;
+				l.add(n11);
 			}
-			var _g_head8 = sA.h;
+			var _g_head8 = sB.h;
 			while(_g_head8 != null) {
 				var val10 = _g_head8.item;
 				_g_head8 = _g_head8.next;
-				var n11 = val10;
-				l.add(n11);
-			}
-			var _g_head9 = sB.h;
-			while(_g_head9 != null) {
-				var val11 = _g_head9.item;
-				_g_head9 = _g_head9.next;
-				var n2 = val11;
+				var n2 = val10;
 				l.add(n2);
 			}
 		} else {
@@ -1983,6 +2026,15 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		}
 	} else {
 		kretha_FourTimesRule.mergeSpecies(sA,sB,bestClades.first(),bestClades.last(),l);
+	}
+	if(l.length == 1) {
+		var _this13 = c.mConnectedInfo;
+		var value1 = l.first();
+		if(__map_reserved["psppl"] != null) {
+			_this13.setReserved("psppl",value1);
+		} else {
+			_this13.h["psppl"] = value1;
+		}
 	}
 	return l;
 };
@@ -2189,6 +2241,7 @@ kretha_Kretha.onMessage = function(e) {
 		var c = kretha_MidPointRooter.root(g);
 		var s = kretha_FourTimesRule.doRule(c,decisionRatio);
 		var resL = kretha_Kretha.formatSpeciesList(s);
+		kretha_CladeColorer.colorClades(c,s);
 		var svg = c.getSVG();
 		if(__map_reserved["svg"] != null) {
 			result.setReserved("svg",svg);
@@ -2997,6 +3050,7 @@ var Class = { __name__ : ["Class"]};
 var Enum = { };
 var __map_reserved = {};
 js_Boot.__toStr = ({ }).toString;
+kretha_CladeColorer.colors = ["#ff0000","#00ffff","#ff8000","#0080ff","#ffff00","#0000ff","#80ff00","#8000ff","#00ff00","#ff00ff","#00ff80","#ff0080"];
 kretha_Sequence.nextHashCode = 0;
 kretha_Kretha.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

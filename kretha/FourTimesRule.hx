@@ -176,7 +176,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         var l:List<List<Sequence>> = new List<List<Sequence>>();
         if (c.isTerminal()) {
             l.add(c.mConnectedInfo.get("seqNames"));
-            c.mConnectedInfo.set("species", l);
+            c.mConnectedInfo.set("psppl", l.first());
             return l;
         }
         var s:List<List<List<Sequence>>> = new List<List<List<Sequence>>>();
@@ -198,12 +198,12 @@ public static function floatToStringPrecision(n:Float, prec:Int){
             var ratio:Float = k / theta;
             c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
             if (ratio >= decisionRatio) {
-                var colors = ["green", "blue", "red"];
-                var pcolor:Int = 0;
-                for (child in c.getChilds()) {
-                    child.colorfy(colors[pcolor]);
-                    pcolor = (pcolor + 1) % colors.length;
-                }
+//                var colors = ["green", "blue", "red"];
+//                var pcolor:Int = 0;
+//                for (child in c.getChilds()) {
+//                    child.colorfy(colors[pcolor]);
+//                    pcolor = (pcolor + 1) % colors.length;
+//                }
                 for (n1 in sA) {
                     l.add(n1);
                 }
@@ -215,6 +215,9 @@ public static function floatToStringPrecision(n:Float, prec:Int){
             }
         } else {
             mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
+        }
+        if (l.length == 1) {
+            c.mConnectedInfo.set("psppl", l.first());
         }
         return l;
     }
