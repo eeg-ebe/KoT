@@ -3050,7 +3050,7 @@ var Class = { __name__ : ["Class"]};
 var Enum = { };
 var __map_reserved = {};
 js_Boot.__toStr = ({ }).toString;
-kretha_CladeColorer.colors = ["#ff0000","#00ffff","#ff8000","#0080ff","#ffff00","#0000ff","#80ff00","#8000ff","#00ff00","#ff00ff","#00ff80","#ff0080"];
+kretha_CladeColorer.colors = ["#FF0000","#00FF00","#0000FF","#CC0000","#00CC00","#0000CC","#CC6600","#99CC00","#006699","#CC9900","#00CC99","#CC00CC","#CC6699","#009933","#0033CC","#6600FF","#3333FF"];
 kretha_Sequence.nextHashCode = 0;
 kretha_Kretha.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
