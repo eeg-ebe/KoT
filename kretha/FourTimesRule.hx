@@ -82,15 +82,17 @@ class FourTimesRule {
         }
         var pairwiseDistance:Float = calcPairwiseDistance(seqs);
         var pi:Float = 0;
-        if (pairwiseDistance == 0) {
-            var seqLen:Int = seqs.first().getLength();
-            pairwiseDistance = 1 / seqLen;
-        }
         if (n == 1) {
             // do as if this individual was sampled twice
             n = 2;
         }
-        pi = pairwiseDistance * n / (n - 1);
+        if (pairwiseDistance == 0) {
+            var seqLen:Int = seqs.first().getLength();
+            pairwiseDistance = 1 / seqLen;
+            pi = 2 / (seqLen * (n - 1) * (n - 1));
+        } else {
+            pi = pairwiseDistance * n / (n - 1);
+        }
 //c.addInfo("n " + n + " " + seqs + ", d " + floatToStringPrecision(pairwiseDistance, 3) + ", pi " + floatToStringPrecision(pi, 3));
         return pi / (1 - 4 * pi / 3);
     }

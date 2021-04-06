@@ -1514,15 +1514,17 @@ kretha_FourTimesRule.calcTheta = function(seqs,c) {
 	}
 	var pairwiseDistance = count == 0 ? 0 : diff / count;
 	var pi = 0;
+	if(n == 1) {
+		n = 2;
+	}
 	if(pairwiseDistance == 0) {
 		var _this3 = seqs.first();
 		var seqLen = _this3.mSeq == null ? 0 : _this3.mSeq.length;
 		pairwiseDistance = 1 / seqLen;
+		pi = 2 / (seqLen * (n - 1) * (n - 1));
+	} else {
+		pi = pairwiseDistance * n / (n - 1);
 	}
-	if(n == 1) {
-		n = 2;
-	}
-	pi = pairwiseDistance * n / (n - 1);
 	return pi / (1 - 4 * pi / 3);
 };
 kretha_FourTimesRule.getBestSubClades = function(subCladeA,subCladeB,c) {
@@ -1891,15 +1893,17 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 	}
 	var pairwiseDistance = count == 0 ? 0 : diff1 / count;
 	var pi = 0;
+	if(n == 1) {
+		n = 2;
+	}
 	if(pairwiseDistance == 0) {
 		var _this8 = seqs.first();
 		var seqLen = _this8.mSeq == null ? 0 : _this8.mSeq.length;
 		pairwiseDistance = 1 / seqLen;
+		pi = 2 / (seqLen * (n - 1) * (n - 1));
+	} else {
+		pi = pairwiseDistance * n / (n - 1);
 	}
-	if(n == 1) {
-		n = 2;
-	}
-	pi = pairwiseDistance * n / (n - 1);
 	var theta1 = pi / (1 - 4 * pi / 3);
 	var seqs1 = bestClades.last();
 	var n1 = 0;
@@ -1989,15 +1993,17 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 	}
 	var pairwiseDistance1 = count1 == 0 ? 0 : diff2 / count1;
 	var pi1 = 0;
+	if(n1 == 1) {
+		n1 = 2;
+	}
 	if(pairwiseDistance1 == 0) {
 		var _this12 = seqs1.first();
 		var seqLen1 = _this12.mSeq == null ? 0 : _this12.mSeq.length;
 		pairwiseDistance1 = 1 / seqLen1;
+		pi1 = 2 / (seqLen1 * (n1 - 1) * (n1 - 1));
+	} else {
+		pi1 = pairwiseDistance1 * n1 / (n1 - 1);
 	}
-	if(n1 == 1) {
-		n1 = 2;
-	}
-	pi1 = pairwiseDistance1 * n1 / (n1 - 1);
 	var theta2 = pi1 / (1 - 4 * pi1 / 3);
 	var info = kretha_FourTimesRule.floatToStringPrecision(theta1,5) + " " + kretha_FourTimesRule.floatToStringPrecision(theta2,5);
 	c.mInfo.add(info);
