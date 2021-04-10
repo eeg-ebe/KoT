@@ -1256,18 +1256,24 @@ kretha_FourTimesRule.calcPairwiseDifference = function(a1,a2) {
 			throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 		}
 		var score = 0;
+		var count = 0;
 		var _g1 = 0;
 		var _g = a1.mSeq == null ? 0 : a1.mSeq.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			var c1 = a1.mSeq.charAt(i);
 			var c2 = a2.mSeq.charAt(i);
+			if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+				continue;
+			}
 			if(c1 != c2) {
 				++score;
 			}
+			++count;
 		}
-		var res = score;
-		result = res / (a1.mSeq == null ? 0 : a1.mSeq.length);
+		console.log("false" + " " + score + " " + count);
+		var res = count == 0 ? 1.0 : score / count;
+		result = res;
 	}
 	return result;
 };
@@ -1329,18 +1335,24 @@ kretha_FourTimesRule.calcPairwiseDistance = function(seqs) {
 							throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 						}
 						var score = 0;
+						var count1 = 0;
 						var _g11 = 0;
 						var _g4 = seq1.mSeq == null ? 0 : seq1.mSeq.length;
 						while(_g11 < _g4) {
 							var i1 = _g11++;
 							var c1 = seq1.mSeq.charAt(i1);
 							var c2 = seq2.mSeq.charAt(i1);
+							if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+								continue;
+							}
 							if(c1 != c2) {
 								++score;
 							}
+							++count1;
 						}
-						var res = score;
-						result = res / (seq1.mSeq == null ? 0 : seq1.mSeq.length);
+						console.log("false" + " " + score + " " + count1);
+						var res = count1 == 0 ? 1.0 : score / count1;
+						result = res;
 					}
 					diff += result;
 					++d;
@@ -1406,18 +1418,24 @@ kretha_FourTimesRule.calcPairwiseDistanceOfSubClades = function(seqsA,seqsB) {
 							throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 						}
 						var score = 0;
+						var count = 0;
 						var _g11 = 0;
 						var _g4 = seq1.mSeq == null ? 0 : seq1.mSeq.length;
 						while(_g11 < _g4) {
 							var i1 = _g11++;
 							var c1 = seq1.mSeq.charAt(i1);
 							var c2 = seq2.mSeq.charAt(i1);
+							if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+								continue;
+							}
 							if(c1 != c2) {
 								++score;
 							}
+							++count;
 						}
-						var res = score;
-						result = res / (seq1.mSeq == null ? 0 : seq1.mSeq.length);
+						console.log("false" + " " + score + " " + count);
+						var res = count == 0 ? 1.0 : score / count;
+						result = res;
 					}
 					diff += result;
 				}
@@ -1492,18 +1510,24 @@ kretha_FourTimesRule.calcTheta = function(seqs,c) {
 							throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 						}
 						var score = 0;
+						var count1 = 0;
 						var _g11 = 0;
 						var _g4 = seq1.mSeq == null ? 0 : seq1.mSeq.length;
 						while(_g11 < _g4) {
 							var i1 = _g11++;
 							var c11 = seq1.mSeq.charAt(i1);
 							var c2 = seq2.mSeq.charAt(i1);
+							if(!(c11 == "-" || c11 == "A" || c11 == "T" || c11 == "G" || c11 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+								continue;
+							}
 							if(c11 != c2) {
 								++score;
 							}
+							++count1;
 						}
-						var res = score;
-						result = res / (seq1.mSeq == null ? 0 : seq1.mSeq.length);
+						console.log("false" + " " + score + " " + count1);
+						var res = count1 == 0 ? 1.0 : score / count1;
+						result = res;
 					}
 					diff += result;
 					++d;
@@ -1592,18 +1616,24 @@ kretha_FourTimesRule.getBestSubClades = function(subCladeA,subCladeB,c) {
 									throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 								}
 								var score = 0;
+								var count = 0;
 								var _g11 = 0;
 								var _g4 = seq1.mSeq == null ? 0 : seq1.mSeq.length;
 								while(_g11 < _g4) {
 									var i1 = _g11++;
 									var c1 = seq1.mSeq.charAt(i1);
 									var c2 = seq2.mSeq.charAt(i1);
+									if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+										continue;
+									}
 									if(c1 != c2) {
 										++score;
 									}
+									++count;
 								}
-								var res = score;
-								result = res / (seq1.mSeq == null ? 0 : seq1.mSeq.length);
+								console.log("false" + " " + score + " " + count);
+								var res = count == 0 ? 1.0 : score / count;
+								result = res;
 							}
 							diff += result;
 						}
@@ -1786,18 +1816,24 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 						}
 						var score = 0;
+						var count = 0;
 						var _g11 = 0;
 						var _g4 = seq1.mSeq == null ? 0 : seq1.mSeq.length;
 						while(_g11 < _g4) {
 							var i1 = _g11++;
 							var c1 = seq1.mSeq.charAt(i1);
 							var c2 = seq2.mSeq.charAt(i1);
+							if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+								continue;
+							}
 							if(c1 != c2) {
 								++score;
 							}
+							++count;
 						}
-						var res = score;
-						result = res / (seq1.mSeq == null ? 0 : seq1.mSeq.length);
+						console.log("false" + " " + score + " " + count);
+						var res = count == 0 ? 1.0 : score / count;
+						result = res;
 					}
 					diff += result;
 				}
@@ -1814,7 +1850,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var seq = val3;
 		n += seq.mNames.length;
 	}
-	var count = 0;
+	var count1 = 0;
 	var diff1 = 0;
 	var c3 = 0;
 	var _g_head4 = seqs.h;
@@ -1840,7 +1876,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 						++d;
 						continue;
 					}
-					++count;
+					++count1;
 					var result1 = 0;
 					if(kretha_FourTimesRule.distanceMatrix != null) {
 						var _this5 = kretha_FourTimesRule.distanceMatrix;
@@ -1871,18 +1907,24 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 						}
 						var score1 = 0;
+						var count2 = 0;
 						var _g13 = 0;
 						var _g6 = seq11.mSeq == null ? 0 : seq11.mSeq.length;
 						while(_g13 < _g6) {
 							var i3 = _g13++;
 							var c11 = seq11.mSeq.charAt(i3);
 							var c21 = seq21.mSeq.charAt(i3);
+							if(!(c11 == "-" || c11 == "A" || c11 == "T" || c11 == "G" || c11 == "C") || !(c21 == "-" || c21 == "A" || c21 == "T" || c21 == "G" || c21 == "C")) {
+								continue;
+							}
 							if(c11 != c21) {
 								++score1;
 							}
+							++count2;
 						}
-						var res1 = score1;
-						result1 = res1 / (seq11.mSeq == null ? 0 : seq11.mSeq.length);
+						console.log("false" + " " + score1 + " " + count2);
+						var res1 = count2 == 0 ? 1.0 : score1 / count2;
+						result1 = res1;
 					}
 					diff1 += result1;
 					++d;
@@ -1891,7 +1933,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			++c3;
 		}
 	}
-	var pairwiseDistance = count == 0 ? 0 : diff1 / count;
+	var pairwiseDistance = count1 == 0 ? 0 : diff1 / count1;
 	var pi = 0;
 	if(n == 1) {
 		n = 2;
@@ -1914,7 +1956,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var seq3 = val6;
 		n1 += seq3.mNames.length;
 	}
-	var count1 = 0;
+	var count3 = 0;
 	var diff2 = 0;
 	var c4 = 0;
 	var _g_head6 = seqs1.h;
@@ -1940,7 +1982,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 						++d1;
 						continue;
 					}
-					++count1;
+					++count3;
 					var result2 = 0;
 					if(kretha_FourTimesRule.distanceMatrix != null) {
 						var _this9 = kretha_FourTimesRule.distanceMatrix;
@@ -1971,18 +2013,24 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 						}
 						var score2 = 0;
+						var count4 = 0;
 						var _g15 = 0;
 						var _g8 = seq12.mSeq == null ? 0 : seq12.mSeq.length;
 						while(_g15 < _g8) {
 							var i5 = _g15++;
 							var c12 = seq12.mSeq.charAt(i5);
 							var c22 = seq22.mSeq.charAt(i5);
+							if(!(c12 == "-" || c12 == "A" || c12 == "T" || c12 == "G" || c12 == "C") || !(c22 == "-" || c22 == "A" || c22 == "T" || c22 == "G" || c22 == "C")) {
+								continue;
+							}
 							if(c12 != c22) {
 								++score2;
 							}
+							++count4;
 						}
-						var res2 = score2;
-						result2 = res2 / (seq12.mSeq == null ? 0 : seq12.mSeq.length);
+						console.log("false" + " " + score2 + " " + count4);
+						var res2 = count4 == 0 ? 1.0 : score2 / count4;
+						result2 = res2;
 					}
 					diff2 += result2;
 					++d1;
@@ -1991,7 +2039,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			++c4;
 		}
 	}
-	var pairwiseDistance1 = count1 == 0 ? 0 : diff2 / count1;
+	var pairwiseDistance1 = count3 == 0 ? 0 : diff2 / count3;
 	var pi1 = 0;
 	if(n1 == 1) {
 		n1 = 2;
@@ -2466,17 +2514,23 @@ kretha_NeighborJoining.run = function(seqs) {
 				throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 			}
 			var score = 0;
+			var count = 0;
 			var _g11 = 0;
 			var _g2 = ind1.mSeq == null ? 0 : ind1.mSeq.length;
 			while(_g11 < _g2) {
 				var i = _g11++;
 				var c1 = ind1.mSeq.charAt(i);
 				var c2 = ind2.mSeq.charAt(i);
+				if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+					continue;
+				}
 				if(c1 != c2) {
 					++score;
 				}
+				++count;
 			}
-			var diff = score;
+			console.log("true" + " " + score + " " + count);
+			var diff = count == 0 ? score : score;
 			if(ind1 == ind2) {
 				if(diff != 0) {
 					throw new js__$Boot_HaxeError("Distance of identical objects must be 0!");
@@ -2999,22 +3053,41 @@ kretha_Sequence.prototype = {
 			return this.mSeq.length;
 		}
 	}
-	,getDifferenceScore: function(o) {
+	,isAmbChar: function(c) {
+		return !(c == "-" || c == "A" || c == "T" || c == "G" || c == "C");
+	}
+	,getDifferenceScore: function(o,flag) {
 		if((o.mSeq == null ? 0 : o.mSeq.length) != (this.mSeq == null ? 0 : this.mSeq.length)) {
 			throw new js__$Boot_HaxeError("Cannot compare sequences of different length!");
 		}
 		var score = 0;
+		var count = 0;
 		var _g1 = 0;
 		var _g = this.mSeq == null ? 0 : this.mSeq.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			var c1 = this.mSeq.charAt(i);
 			var c2 = o.mSeq.charAt(i);
+			if(!(c1 == "-" || c1 == "A" || c1 == "T" || c1 == "G" || c1 == "C") || !(c2 == "-" || c2 == "A" || c2 == "T" || c2 == "G" || c2 == "C")) {
+				continue;
+			}
 			if(c1 != c2) {
 				++score;
 			}
+			++count;
 		}
-		return score;
+		console.log((flag == null ? "null" : "" + flag) + " " + score + " " + count);
+		if(count == 0) {
+			if(flag) {
+				return score;
+			}
+			return 1.0;
+		}
+		if(flag) {
+			return score;
+		} else {
+			return score / count;
+		}
 	}
 	,getNodeName: function() {
 		var result = null;

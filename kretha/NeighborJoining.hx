@@ -35,7 +35,7 @@ class NeighborJoining {
                 if (ind1 == ind2) {
                     break;
                 }
-                var diff:Float = ind1.getDifferenceScore(ind2);
+                var diff:Float = ind1.getDifferenceScore(ind2, true);
                 d.set(ind1, ind2, diff);
             }
         }

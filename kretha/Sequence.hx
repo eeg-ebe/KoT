@@ -69,22 +69,33 @@ class Sequence {
         return (mSeq == null) ? 0 : mSeq.length;
     }
 
+    public inline function isAmbChar(c:String) {
+        return !(c == '-' || c == 'A' || c == 'T' || c == 'G' || c == 'C');
+    }
+
     /**
      * Compare this sequence against a sequence of equal length.
      */
-    public inline function getDifferenceScore(o:Sequence):Int {
+    public inline function getDifferenceScore(o:Sequence, flag:Bool):Float {
         if (o.getLength() != getLength()) {
             throw "Cannot compare sequences of different length!";
         }
         var score:Int = 0;
+        var count:Int = 0;
         for (i in 0...getLength()) {
             var c1:String = mSeq.charAt(i);
             var c2:String = o.mSeq.charAt(i);
+            if (isAmbChar(c1) || isAmbChar(c2)) continue;
             if (c1 != c2) {
                 score++;
             }
+            count++;
         }
-        return score;
+        if (count == 0) {
+            if (flag) return score;
+            return 1.0;
+        }
+        return (flag) ? score : score / count;
     }
 
     public inline function getNodeName():String {

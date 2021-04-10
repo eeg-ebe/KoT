@@ -29,8 +29,8 @@ class FourTimesRule {
         if (distanceMatrix != null) {
             result = distanceMatrix.lookup(a1, a2);
         } else {
-            var res:Float = a1.getDifferenceScore(a2);
-            result = res / a1.getLength();
+            var res:Float = a1.getDifferenceScore(a2, false);
+            result = res; // / a1.getLength();
         }
         return result;
     }
