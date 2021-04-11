@@ -113,7 +113,7 @@ class Clade {
     private var mLineWidth:Int = 1;
     private var mBorder:Int = 20;
     private var mLineTextDist:Int = 3;
-    private var mDistStretch:Float = 20;
+    private var mDistStretch:Float = 12000;
 
     /**
      * Calculate the needed draw size (in case this clade needs to get drawn).

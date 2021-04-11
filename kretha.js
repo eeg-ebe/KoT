@@ -456,7 +456,7 @@ js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
 var kretha_Clade = function() {
-	this.mDistStretch = 20;
+	this.mDistStretch = 12000;
 	this.mLineTextDist = 3;
 	this.mBorder = 20;
 	this.mLineWidth = 1;
@@ -1271,7 +1271,6 @@ kretha_FourTimesRule.calcPairwiseDifference = function(a1,a2) {
 			}
 			++count;
 		}
-		console.log("false" + " " + score + " " + count);
 		var res = count == 0 ? 1.0 : score / count;
 		result = res;
 	}
@@ -1350,7 +1349,6 @@ kretha_FourTimesRule.calcPairwiseDistance = function(seqs) {
 							}
 							++count1;
 						}
-						console.log("false" + " " + score + " " + count1);
 						var res = count1 == 0 ? 1.0 : score / count1;
 						result = res;
 					}
@@ -1433,7 +1431,6 @@ kretha_FourTimesRule.calcPairwiseDistanceOfSubClades = function(seqsA,seqsB) {
 							}
 							++count;
 						}
-						console.log("false" + " " + score + " " + count);
 						var res = count == 0 ? 1.0 : score / count;
 						result = res;
 					}
@@ -1525,7 +1522,6 @@ kretha_FourTimesRule.calcTheta = function(seqs,c) {
 							}
 							++count1;
 						}
-						console.log("false" + " " + score + " " + count1);
 						var res = count1 == 0 ? 1.0 : score / count1;
 						result = res;
 					}
@@ -1631,7 +1627,6 @@ kretha_FourTimesRule.getBestSubClades = function(subCladeA,subCladeB,c) {
 									}
 									++count;
 								}
-								console.log("false" + " " + score + " " + count);
 								var res = count == 0 ? 1.0 : score / count;
 								result = res;
 							}
@@ -1831,7 +1826,6 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							}
 							++count;
 						}
-						console.log("false" + " " + score + " " + count);
 						var res = count == 0 ? 1.0 : score / count;
 						result = res;
 					}
@@ -1922,7 +1916,6 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							}
 							++count2;
 						}
-						console.log("false" + " " + score1 + " " + count2);
 						var res1 = count2 == 0 ? 1.0 : score1 / count2;
 						result1 = res1;
 					}
@@ -2028,7 +2021,6 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							}
 							++count4;
 						}
-						console.log("false" + " " + score2 + " " + count4);
 						var res2 = count4 == 0 ? 1.0 : score2 / count4;
 						result2 = res2;
 					}
@@ -2529,8 +2521,7 @@ kretha_NeighborJoining.run = function(seqs) {
 				}
 				++count;
 			}
-			console.log("true" + " " + score + " " + count);
-			var diff = count == 0 ? score : score;
+			var diff = count == 0 ? 1.0 : score / count;
 			if(ind1 == ind2) {
 				if(diff != 0) {
 					throw new js__$Boot_HaxeError("Distance of identical objects must be 0!");
@@ -2787,6 +2778,20 @@ kretha_NeighborJoining.runOnMatrix = function(d) {
 		var key19 = lowestSeq2.hashCode();
 		var v_iu1 = (v_iu - _this19.h[key19]) / 2;
 		var v_ju = dist - v_iu1;
+		if(v_iu1 < 0 && v_ju < 0) {
+			var x_tmp = v_iu1;
+			v_iu1 = -v_ju;
+			v_ju = -x_tmp;
+		} else {
+			if(v_iu1 < 0) {
+				v_ju -= v_iu1;
+				v_iu1 = 0;
+			}
+			if(v_ju < 0) {
+				v_iu1 -= v_ju;
+				v_ju = 0;
+			}
+		}
 		var gn = new kretha_GraphNode(inner);
 		var this2 = result.mNodes;
 		var _this20 = this2.keys;
@@ -3076,7 +3081,6 @@ kretha_Sequence.prototype = {
 			}
 			++count;
 		}
-		console.log((flag == null ? "null" : "" + flag) + " " + score + " " + count);
 		if(count == 0) {
 			if(flag) {
 				return score;

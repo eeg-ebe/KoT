@@ -35,7 +35,7 @@ class NeighborJoining {
                 if (ind1 == ind2) {
                     break;
                 }
-                var diff:Float = ind1.getDifferenceScore(ind2, true);
+                var diff:Float = ind1.getDifferenceScore(ind2, false);
                 d.set(ind1, ind2, diff);
             }
         }
@@ -94,6 +94,22 @@ class NeighborJoining {
             var dist:Float = d.lookup(lowestSeq1, lowestSeq2);
             var v_iu = (dist + r.get(lowestSeq1) - r.get(lowestSeq2)) / 2;
             var v_ju = dist - v_iu;
+
+            if (v_iu < 0 && v_ju < 0) {
+                var x_tmp:Float = v_iu;
+                v_iu = -v_ju;
+                v_ju = -x_tmp;
+            } else {
+                if (v_iu < 0) {
+                    v_ju = v_ju - v_iu;
+                    v_iu = 0;
+                }
+                if (v_ju < 0) {
+                    v_iu = v_iu - v_ju;
+                    v_ju = 0;
+                }
+            }
+
             // combine in graph
             result.addNode(inner);
             result.addEdge(lowestSeq1, inner, v_iu);
