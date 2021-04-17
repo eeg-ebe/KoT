@@ -98,7 +98,7 @@ class FourTimesRule {
     }
     
     public static function getBestSubClades(subCladeA:List<List<Sequence>>, subCladeB:List<List<Sequence>>, c:Clade):List<List<Sequence>> {
-        var best:Float = Math.POSITIVE_INFINITY;
+/*        var best:Float = Math.POSITIVE_INFINITY;
         var a:List<Sequence> = null, b:List<Sequence> = null;
         for (spSA in subCladeA) {
             for (spSB in subCladeB) {
@@ -110,10 +110,12 @@ class FourTimesRule {
                     b = spSB;
                 }
             }
-        }
+        }*/
         var l:List<List<Sequence>> = new List<List<Sequence>>();
-        l.add(a);
-        l.add(b);
+//        l.add(a);
+//        l.add(b);
+        l.add(subCladeA.first());
+        l.add(subCladeB.first());
         return l;
     }
 
@@ -190,36 +192,106 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         if (s.length != 2) throw "WTF?";
         var sA:List<List<Sequence>> = s.first();
         var sB:List<List<Sequence>> = s.last();
-        var bestClades:List<List<Sequence>> = getBestSubClades(sA, sB, c);
-        var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
-        var theta1:Float = calcTheta(bestClades.first(), c);
-        var theta2:Float = calcTheta(bestClades.last(), c);
-        c.addInfo(floatToStringPrecision(theta1, 5) + " " + floatToStringPrecision(theta2, 5));
-        var theta:Float = (theta1 > theta2) ? theta1 : theta2;
-        if (theta != -1) {
-            var ratio:Float = k / theta;
-            c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
-            if (ratio >= decisionRatio) {
-//                var colors = ["green", "blue", "red"];
-//                var pcolor:Int = 0;
-//                for (child in c.getChilds()) {
-//                    child.colorfy(colors[pcolor]);
-//                    pcolor = (pcolor + 1) % colors.length;
-//                }
+        var nSpecies:Int = sA.length + sB.length;
+        if (nSpecies == 2) {
+            var bestClades:List<List<Sequence>> = getBestSubClades(sA, sB, c);
+            var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
+            var theta1:Float = calcTheta(bestClades.first(), c);
+            var theta2:Float = calcTheta(bestClades.last(), c);
+            c.addInfo(floatToStringPrecision(theta1, 5) + " " + floatToStringPrecision(theta2, 5));
+            var theta:Float = (theta1 > theta2) ? theta1 : theta2;
+            if (theta != -1) {
+                var ratio:Float = k / theta;
+                c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
+                if (ratio >= decisionRatio) {
+//                    var colors = ["green", "blue", "red"];
+//                    var pcolor:Int = 0;
+//                    for (child in c.getChilds()) {
+//                        child.colorfy(colors[pcolor]);
+//                        pcolor = (pcolor + 1) % colors.length;
+//                    }
+                    for (n1 in sA) {
+                        l.add(n1);
+                    }
+                    for (n2 in sB) {
+                        l.add(n2);
+                    }
+                } else {
+                    mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
+                }
+            } else {
+                mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
+            }
+            if (l.length == 1) {
+                c.mConnectedInfo.set("psppl", l.first());
+            }
+        } else if (nSpecies == 3) {
+            var sameCount:Int = 0;
+            var sX:List<Sequence> = null;
+            var sY:List<Sequence> = null;
+            for (s1 in sA) {
+                for (s2 in sB) {
+                    var k:Float = calcPairwiseDistanceOfSubClades(s1, s2);
+                    var theta1:Float = calcTheta(s1, c);
+                    var theta2:Float = calcTheta(s2, c);
+                    c.addInfo(floatToStringPrecision(theta1, 5) + " " + floatToStringPrecision(theta2, 5));
+                    var theta:Float = (theta1 > theta2) ? theta1 : theta2;
+                    if (theta != -1) {
+                        var ratio:Float = k / theta;
+                        c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
+                        if (ratio >= decisionRatio) {
+                            ++sameCount;
+                            sX = s1;
+                            sY = s2;
+                        }
+                    }
+                }
+            }
+            if (sameCount == 0) { // 3 different. Easy
                 for (n1 in sA) {
                     l.add(n1);
                 }
                 for (n2 in sB) {
                     l.add(n2);
                 }
-            } else {
-                mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
+            } else if (sameCount == 1) { // 2 different. Which one ...
+                var ll1:List<Sequence> = new List<Sequence>();
+                var ll2:List<Sequence> = new List<Sequence>();
+                for (n in sX) ll1.add(n);
+                for (n in sY) ll1.add(n);
+                for (s in sA) {
+                    if (s != sX && s != sY) {
+                        ll2 = s;
+                    }
+                }
+                for (s in sB) {
+                    if (s != sX && s != sY) {
+                        ll2 = s;
+                    }
+                }
+                l.add(ll1);
+                l.add(ll2);
+            } else { // 3 same. Easy
+                var ll:List<Sequence> = new List<Sequence>();
+                for (n1 in sA) {
+                    for(ind in n1) {
+                        ll.add(ind);
+                    }
+                }
+                for (n2 in sB) {
+                    for(ind in n2) {
+                        ll.add(ind);
+                    }
+                }
+                l.add(ll);
             }
         } else {
-            mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
-        }
-        if (l.length == 1) {
-            c.mConnectedInfo.set("psppl", l.first());
+            for (n1 in sA) {
+                l.add(n1);
+            }
+            for (n2 in sB) {
+                l.add(n2);
+            }
         }
         return l;
     }
