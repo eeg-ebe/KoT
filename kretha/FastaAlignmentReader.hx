@@ -52,7 +52,7 @@ class FastaAlignmentReader implements IAlignmentReader {
                 name = StringTools.trim(line.substr(1));
                 seq = "";
             } else {
-                seq = seq + line;
+                seq = seq.toUpperCase() + line;
             }
         }
         if (name != null) {

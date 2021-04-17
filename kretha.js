@@ -1190,7 +1190,7 @@ kretha_FastaAlignmentReader.prototype = {
 				name = StringTools.trim(HxOverrides.substr(line,1,null));
 				seq = "";
 			} else {
-				seq += line;
+				seq = seq.toUpperCase() + line;
 			}
 		}
 		if(name != null) {
