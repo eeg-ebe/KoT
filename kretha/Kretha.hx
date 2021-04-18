@@ -51,10 +51,11 @@ class Kretha {
         try {
             var fileContent:String = cast(e.data.txt, String);
             var decisionRatio:Float = cast(e.data.decisionRatio, Float);
+            var globalDeletion:Bool = cast(e.data.globalDeletion, Bool);
             var g:Graph<Sequence,Float> = null;
             if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
                 var reader:FastaAlignmentReader = new FastaAlignmentReader();
-                var seqs:Vector<Sequence> = reader.readSequences(fileContent);
+                var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
                 g = NeighborJoining.run(seqs);
             } else {
                 var reader:DistanceMatrixReader = new DistanceMatrixReader();

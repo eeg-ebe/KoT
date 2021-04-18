@@ -28,6 +28,7 @@
             <textarea id="faFileContent" style="width: 100%" autocomplete="off"></textarea>
             <br>
             <input id="decisionRatio" type="text" placeholder="Decision Ratio" value="4" />
+            <input id="globalDel" type="checkbox" />Global Deletion<br>
             <br><br>
             <span class="middle">
                 <button onclick="calculate()">Calculate</button>
@@ -63,6 +64,8 @@ function calculate() {
     var ratioTxt = document.getElementById('decisionRatio').value;
     var ratio = parseFloat(ratioTxt);
 
+    var globalDel = document.getElementById('globalDel').checked;
+
     var worker = new Worker("kretha.js");
     worker.addEventListener("message", function(e) {
         data = e.data;
@@ -86,7 +89,7 @@ function calculate() {
     }
     var reader = new FileReader();
     reader.onload = function(data) {
-        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio});
+        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio, "globalDeletion" : globalDel});
     };
     reader.readAsText(files[0]);
 }

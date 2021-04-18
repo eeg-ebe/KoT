@@ -16,6 +16,7 @@
 package kretha;
 
 import haxe.ds.StringMap;
+import haxe.ds.IntMap;
 import haxe.ds.Vector;
 
 /**
@@ -26,7 +27,7 @@ import haxe.ds.Vector;
 class FastaAlignmentReader implements IAlignmentReader {
 
     public function new() {}
-    public function readSequences(fileContent:String):Vector<Sequence> {
+    public function readSequences(fileContent:String, globalDeletion:Bool):Vector<Sequence> {
         var sequences:Array<Sequence> = new Array<Sequence>();
         var lines:Array<String> = fileContent.split("\n");
         var name:Null<String> = null, seq:Null<String> = null;
@@ -69,8 +70,16 @@ class FastaAlignmentReader implements IAlignmentReader {
         }
         var result:Vector<Sequence> = new Vector<Sequence>(sequences.length);
         var i:Int = 0;
+        var badPositions:IntMap<Bool> = new IntMap<Bool>();
         for (sequence in sequences) {
             result[i++] = sequence;
+            var pp:List<Int> = sequence.getBadPositions();
+            for (i in pp) {
+                badPositions.set(i, true);
+            }
+        }
+        for (sequence in sequences) {
+            sequence.removePositions(badPositions);
         }
         return result;
     }

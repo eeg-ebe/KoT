@@ -15,6 +15,8 @@
  */
 package kretha;
 
+import haxe.ds.IntMap;
+
 /**
  * A Sequence.
  * 
@@ -115,6 +117,28 @@ class Sequence {
 
     public inline function hashCode():Int {
         return mHashCode;
+    }
+
+    public function getBadPositions():List<Int> {
+        var result:List<Int> = new List<Int>();
+        for (i in 0...mSeq.length) {
+            var c:String = mSeq.charAt(i);
+            if (c != 'A' && c != 'T' && c != 'G' && c != 'C' && c != '-') {
+                result.add(i);
+            }
+        }
+        return result;
+    }
+    public function removePositions(im:IntMap<Bool>):Void {
+        var newS:List<String> = new List<String>();
+        for (i in 0...mSeq.length) {
+            var c:String = mSeq.charAt(i);
+            if (im.get(i)) {
+                continue;
+            }
+            newS.add(c);
+        }
+        mSeq = newS.join("");
     }
 
 }

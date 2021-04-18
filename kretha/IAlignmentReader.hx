@@ -24,6 +24,6 @@ import haxe.ds.Vector;
  */
 interface IAlignmentReader {
 
-    public function readSequences(fileContent:String):Vector<Sequence>;
+    public function readSequences(fileContent:String, globalDeletion:Bool):Vector<Sequence>;
 
 }

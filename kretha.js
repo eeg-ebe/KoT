@@ -1156,7 +1156,7 @@ var kretha_FastaAlignmentReader = function() {
 kretha_FastaAlignmentReader.__name__ = true;
 kretha_FastaAlignmentReader.__interfaces__ = [kretha_IAlignmentReader];
 kretha_FastaAlignmentReader.prototype = {
-	readSequences: function(fileContent) {
+	readSequences: function(fileContent,globalDeletion) {
 		var sequences = [];
 		var lines = fileContent.split("\n");
 		var name = null;
@@ -1213,11 +1213,26 @@ kretha_FastaAlignmentReader.prototype = {
 		var this1 = new Array(length);
 		var result = this1;
 		var i = 0;
+		var badPositions = new haxe_ds_IntMap();
 		var _g1 = 0;
 		while(_g1 < sequences.length) {
 			var sequence = sequences[_g1];
 			++_g1;
 			result[i++] = sequence;
+			var pp = sequence.getBadPositions();
+			var _g1_head = pp.h;
+			while(_g1_head != null) {
+				var val = _g1_head.item;
+				_g1_head = _g1_head.next;
+				var i1 = val;
+				badPositions.h[i1] = true;
+			}
+		}
+		var _g2 = 0;
+		while(_g2 < sequences.length) {
+			var sequence1 = sequences[_g2];
+			++_g2;
+			sequence1.removePositions(badPositions);
 		}
 		return result;
 	}
@@ -2593,10 +2608,11 @@ kretha_Kretha.onMessage = function(e) {
 	try {
 		var fileContent = js_Boot.__cast(e.data.txt , String);
 		var decisionRatio = js_Boot.__cast(e.data.decisionRatio , Float);
+		var globalDeletion = js_Boot.__cast(e.data.globalDeletion , Bool);
 		var g = null;
 		if(fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
 			var reader = new kretha_FastaAlignmentReader();
-			var seqs = reader.readSequences(fileContent);
+			var seqs = reader.readSequences(fileContent,globalDeletion);
 			g = kretha_NeighborJoining.run(seqs);
 		} else {
 			var reader1 = new kretha_DistanceMatrixReader();
@@ -3437,6 +3453,33 @@ kretha_Sequence.prototype = {
 	}
 	,hashCode: function() {
 		return this.mHashCode;
+	}
+	,getBadPositions: function() {
+		var result = new List();
+		var _g1 = 0;
+		var _g = this.mSeq.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var c = this.mSeq.charAt(i);
+			if(c != "A" && c != "T" && c != "G" && c != "C" && c != "-") {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+	,removePositions: function(im) {
+		var newS = new List();
+		var _g1 = 0;
+		var _g = this.mSeq.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var c = this.mSeq.charAt(i);
+			if(im.h[i]) {
+				continue;
+			}
+			newS.add(c);
+		}
+		this.mSeq = newS.join("");
 	}
 	,__class__: kretha_Sequence
 };
