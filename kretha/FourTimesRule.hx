@@ -226,7 +226,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
                 c.mConnectedInfo.set("psppl", l.first());
             }
         } else if (nSpecies == 3) {
-            var sameCount:Int = 0;
+            var diffCount:Int = 0;
             var sX:List<Sequence> = null;
             var sY:List<Sequence> = null;
             for (s1 in sA) {
@@ -234,27 +234,35 @@ public static function floatToStringPrecision(n:Float, prec:Int){
                     var k:Float = calcPairwiseDistanceOfSubClades(s1, s2);
                     var theta1:Float = calcTheta(s1, c);
                     var theta2:Float = calcTheta(s2, c);
+                    c.addInfo(s1 + " " + s2);
                     c.addInfo(floatToStringPrecision(theta1, 5) + " " + floatToStringPrecision(theta2, 5));
                     var theta:Float = (theta1 > theta2) ? theta1 : theta2;
                     if (theta != -1) {
                         var ratio:Float = k / theta;
                         c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
                         if (ratio >= decisionRatio) {
-                            ++sameCount;
+                            ++diffCount;
+                        } else {
                             sX = s1;
                             sY = s2;
                         }
                     }
                 }
             }
-            if (sameCount == 0) { // 3 different. Easy
+            if (diffCount == 0) { // 3 different. Easy
+                var ll:List<Sequence> = new List<Sequence>();
                 for (n1 in sA) {
-                    l.add(n1);
+                    for(ind in n1) {
+                        ll.add(ind);
+                    }
                 }
                 for (n2 in sB) {
-                    l.add(n2);
+                    for(ind in n2) {
+                        ll.add(ind);
+                    }
                 }
-            } else if (sameCount == 1) { // 2 different. Which one ...
+                l.add(ll);
+            } else if (diffCount == 1) { // 2 different. Which one ...
                 var ll1:List<Sequence> = new List<Sequence>();
                 var ll2:List<Sequence> = new List<Sequence>();
                 for (n in sX) ll1.add(n);
@@ -272,18 +280,12 @@ public static function floatToStringPrecision(n:Float, prec:Int){
                 l.add(ll1);
                 l.add(ll2);
             } else { // 3 same. Easy
-                var ll:List<Sequence> = new List<Sequence>();
                 for (n1 in sA) {
-                    for(ind in n1) {
-                        ll.add(ind);
-                    }
+                    l.add(n1);
                 }
                 for (n2 in sB) {
-                    for(ind in n2) {
-                        ll.add(ind);
-                    }
+                    l.add(n2);
                 }
-                l.add(ll);
             }
         } else {
             for (n1 in sA) {
@@ -293,6 +295,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
                 l.add(n2);
             }
         }
+        c.addInfo("" + l);
         return l;
     }
 
