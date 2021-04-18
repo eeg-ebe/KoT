@@ -1967,7 +1967,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			pi1 = pairwiseDistance1 * n1 / (n1 - 1);
 		}
 		var theta2 = pi1 / (1 - 4 * pi1 / 3);
-		var info = kretha_FourTimesRule.floatToStringPrecision(theta1,5) + " " + kretha_FourTimesRule.floatToStringPrecision(theta2,5);
+		var info = kretha_FourTimesRule.floatToStringPrecision(theta1,5) + "(" + bestClades.first().length + ") " + kretha_FourTimesRule.floatToStringPrecision(theta2,5) + "(" + bestClades.last().length + ")";
 		c.mInfo.add(info);
 		var theta = theta1 > theta2 ? theta1 : theta2;
 		if(theta != -1) {
@@ -2302,7 +2302,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 				}
 				var theta21 = pi3 / (1 - 4 * pi3 / 3);
 				c.mInfo.add(Std.string(s1) + " " + Std.string(s2));
-				var info2 = kretha_FourTimesRule.floatToStringPrecision(theta11,5) + " " + kretha_FourTimesRule.floatToStringPrecision(theta21,5);
+				var info2 = kretha_FourTimesRule.floatToStringPrecision(theta11,5) + "(" + s1.length + ") " + kretha_FourTimesRule.floatToStringPrecision(theta21,5) + "(" + s2.length + ")";
 				c.mInfo.add(info2);
 				var theta3 = theta11 > theta21 ? theta11 : theta21;
 				if(theta3 != -1) {
