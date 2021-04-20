@@ -95,18 +95,33 @@ class Kretha {
 
     public static function main() {
         #if sys
+        var globalDeletion:Bool = true;
+        var decisionRatio:Float = 4.0;
+
         var path:String = Sys.args()[0];
         var fileContent:String = File.getContent(path);
-        var reader:FastaAlignmentReader = new FastaAlignmentReader();
-        var seqs:Vector<Sequence> = reader.readSequences(fileContent);
-        var g = NeighborJoining.run(seqs);
-        var result:String = g.getGraphDotRepresentation();
-        trace(result);
-        var c:Clade = MidPointRooter.root(g, seqs);
-        trace(c);
-        FourTimesRule.doRule(c);
-        trace(c);
-        trace(c.getSVG());
+
+        var g:Graph<Sequence,Float> = null;
+        if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
+            var reader:FastaAlignmentReader = new FastaAlignmentReader();
+            var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
+            g = NeighborJoining.run(seqs);
+        } else {
+            var reader:DistanceMatrixReader = new DistanceMatrixReader();
+            var d:DistanceMatrix<Sequence> = reader.readMatrix(fileContent);
+            g = NeighborJoining.runOnMatrix(d);
+            FourTimesRule.distanceMatrix = d;
+        }
+        var c:Clade = MidPointRooter.root(g);
+        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio);
+        Sys.stdout().writeString("=== List of putative species ===\n");
+        var id:Int = 0;
+        for (lst in s) {
+            id++;
+            for (ind in lst) {
+                Sys.stdout().writeString(ind + "\t" + id + "\n");
+            }
+        }
         #elseif js
         workerScope = untyped self;
         workerScope.onmessage = onMessage;
