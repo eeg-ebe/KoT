@@ -32,6 +32,7 @@ class FastaAlignmentReader implements IAlignmentReader {
         var lines:Array<String> = fileContent.split("\n");
         var name:Null<String> = null, seq:Null<String> = null;
         var seqAlreadySeen:StringMap<Sequence> = new StringMap<Sequence>();
+        var badPositions:IntMap<Bool> = new IntMap<Bool>();
         for (line in lines) {
             line = StringTools.trim(line);
             if (line == "" || line.charAt(0) == ";" || line.charAt(0) == "#") {
@@ -68,18 +69,43 @@ class FastaAlignmentReader implements IAlignmentReader {
                 sequences.push(s);
             }
         }
+        if (globalDeletion) {
+            // ok, we need to perform a global deletion
+            // check which positions need to be deleted
+            var posToDelete:IntMap<Bool> = new IntMap<Bool>();
+            for (sequence in sequences) {
+                sequence.getBadPositions(posToDelete);
+            }
+            // combine
+            var count:Int = 0;
+            var seqs:StringMap<List<String>> = new StringMap<List<String>>();
+            for (sequence in sequences) {
+                var s:String = sequence.removePositions(posToDelete);
+                if (seqs.exists(s)) {
+                    var names:List<String> = seqs.get(s);
+                    for (name in sequence.getNames()) {
+                        names.add(name);
+                    }
+                    seqs.set(s, names);
+                } else {
+                    seqs.set(s, sequence.getNames());
+                    count++;
+                }
+            }
+            // create vector
+            var result:Vector<Sequence> = new Vector<Sequence>(count);
+            var i:Int = 0;
+            for (sequence in seqs.keys()) {
+                var s:String = sequence;
+                var names:List<String> = seqs.get(sequence);
+                result[i++] = new Sequence(names, s);
+            }
+            return result;
+        }
         var result:Vector<Sequence> = new Vector<Sequence>(sequences.length);
         var i:Int = 0;
-        var badPositions:IntMap<Bool> = new IntMap<Bool>();
         for (sequence in sequences) {
             result[i++] = sequence;
-            var pp:List<Int> = sequence.getBadPositions();
-            for (i in pp) {
-                badPositions.set(i, true);
-            }
-        }
-        for (sequence in sequences) {
-            sequence.removePositions(badPositions);
         }
         return result;
     }

@@ -202,6 +202,25 @@ haxe_ds_StringMap.prototype = {
 		}
 		return this.rh.hasOwnProperty("$" + key);
 	}
+	,keys: function() {
+		return HxOverrides.iter(this.arrayKeys());
+	}
+	,arrayKeys: function() {
+		var out = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) {
+			out.push(key);
+		}
+		}
+		if(this.rh != null) {
+			for( var key in this.rh ) {
+			if(key.charCodeAt(0) == 36) {
+				out.push(key.substr(1));
+			}
+			}
+		}
+		return out;
+	}
 	,__class__: haxe_ds_StringMap
 };
 var haxe_ds__$Vector_Vector_$Impl_$ = {};
@@ -1162,6 +1181,7 @@ kretha_FastaAlignmentReader.prototype = {
 		var name = null;
 		var seq = null;
 		var seqAlreadySeen = new haxe_ds_StringMap();
+		var badPositions_h = { };
 		var _g = 0;
 		while(_g < lines.length) {
 			var line = lines[_g];
@@ -1209,32 +1229,68 @@ kretha_FastaAlignmentReader.prototype = {
 				sequences.push(s3);
 			}
 		}
-		var length = sequences.length;
-		var this1 = new Array(length);
-		var result = this1;
-		var i = 0;
-		var badPositions = new haxe_ds_IntMap();
-		var _g1 = 0;
-		while(_g1 < sequences.length) {
-			var sequence = sequences[_g1];
-			++_g1;
-			result[i++] = sequence;
-			var pp = sequence.getBadPositions();
-			var _g1_head = pp.h;
-			while(_g1_head != null) {
-				var val = _g1_head.item;
-				_g1_head = _g1_head.next;
-				var i1 = val;
-				badPositions.h[i1] = true;
+		if(globalDeletion) {
+			var posToDelete = new haxe_ds_IntMap();
+			var _g1 = 0;
+			while(_g1 < sequences.length) {
+				var sequence = sequences[_g1];
+				++_g1;
+				sequence.getBadPositions(posToDelete);
 			}
+			var count = 0;
+			var seqs = new haxe_ds_StringMap();
+			var _g2 = 0;
+			while(_g2 < sequences.length) {
+				var sequence1 = sequences[_g2];
+				++_g2;
+				var s4 = sequence1.removePositions(posToDelete);
+				if(__map_reserved[s4] != null ? seqs.existsReserved(s4) : seqs.h.hasOwnProperty(s4)) {
+					var names = __map_reserved[s4] != null ? seqs.getReserved(s4) : seqs.h[s4];
+					var _g1_head = sequence1.mNames.h;
+					while(_g1_head != null) {
+						var val = _g1_head.item;
+						_g1_head = _g1_head.next;
+						var name1 = val;
+						names.add(name1);
+					}
+					if(__map_reserved[s4] != null) {
+						seqs.setReserved(s4,names);
+					} else {
+						seqs.h[s4] = names;
+					}
+				} else {
+					var value = sequence1.mNames;
+					if(__map_reserved[s4] != null) {
+						seqs.setReserved(s4,value);
+					} else {
+						seqs.h[s4] = value;
+					}
+					++count;
+				}
+			}
+			var this1 = new Array(count);
+			var result = this1;
+			var i = 0;
+			var sequence2 = seqs.keys();
+			while(sequence2.hasNext()) {
+				var sequence3 = sequence2.next();
+				var s5 = sequence3;
+				var names1 = __map_reserved[sequence3] != null ? seqs.getReserved(sequence3) : seqs.h[sequence3];
+				result[i++] = new kretha_Sequence(names1,s5);
+			}
+			return result;
 		}
-		var _g2 = 0;
-		while(_g2 < sequences.length) {
-			var sequence1 = sequences[_g2];
-			++_g2;
-			sequence1.removePositions(badPositions);
+		var length = sequences.length;
+		var this2 = new Array(length);
+		var result1 = this2;
+		var i1 = 0;
+		var _g3 = 0;
+		while(_g3 < sequences.length) {
+			var sequence4 = sequences[_g3];
+			++_g3;
+			result1[i1++] = sequence4;
 		}
-		return result;
+		return result1;
 	}
 	,__class__: kretha_FastaAlignmentReader
 };
@@ -3454,18 +3510,16 @@ kretha_Sequence.prototype = {
 	,hashCode: function() {
 		return this.mHashCode;
 	}
-	,getBadPositions: function() {
-		var result = new List();
+	,getBadPositions: function(result) {
 		var _g1 = 0;
 		var _g = this.mSeq.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			var c = this.mSeq.charAt(i);
 			if(c != "A" && c != "T" && c != "G" && c != "C" && c != "-") {
-				result.add(i);
+				result.h[i] = true;
 			}
 		}
-		return result;
 	}
 	,removePositions: function(im) {
 		var newS = new List();
@@ -3479,7 +3533,7 @@ kretha_Sequence.prototype = {
 			}
 			newS.add(c);
 		}
-		this.mSeq = newS.join("");
+		return newS.join("");
 	}
 	,__class__: kretha_Sequence
 };

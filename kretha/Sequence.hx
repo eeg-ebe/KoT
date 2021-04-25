@@ -119,17 +119,15 @@ class Sequence {
         return mHashCode;
     }
 
-    public function getBadPositions():List<Int> {
-        var result:List<Int> = new List<Int>();
+    public function getBadPositions(result:IntMap<Bool>):Void {
         for (i in 0...mSeq.length) {
             var c:String = mSeq.charAt(i);
             if (c != 'A' && c != 'T' && c != 'G' && c != 'C' && c != '-') {
-                result.add(i);
+                result.set(i, true);
             }
         }
-        return result;
     }
-    public function removePositions(im:IntMap<Bool>):Void {
+    public function removePositions(im:IntMap<Bool>):String {
         var newS:List<String> = new List<String>();
         for (i in 0...mSeq.length) {
             var c:String = mSeq.charAt(i);
@@ -138,7 +136,7 @@ class Sequence {
             }
             newS.add(c);
         }
-        mSeq = newS.join("");
+        return newS.join("");
     }
 
 }
