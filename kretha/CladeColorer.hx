@@ -52,8 +52,27 @@ class CladeColorer {
         c.colorfy(color);
     }
 
+    private static function same(l1:List<Sequence>, l2:List<Sequence>):Bool {
+        if (l1.length != l2.length) {
+            return false;
+        }
+        for (x in l1) {
+            var found:Bool = false;
+            for (y in l2) {
+                if (x == y) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static function findClade(c:Clade, l:List<Sequence>):Clade {
-        if (c.mConnectedInfo.get("psppl") == l || c.mConnectedInfo.get("seqNames") == l) {
+        if (same(c.mConnectedInfo.get("seqNames"), l)) {
             return c;
         }
         for (child in c.getChilds()) {

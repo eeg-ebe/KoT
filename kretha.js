@@ -889,16 +889,35 @@ kretha_CladeColorer.colorClade = function(c,i) {
 	var color = kretha_CladeColorer.colors[ii];
 	c.colorfy(color);
 };
-kretha_CladeColorer.findClade = function(c,l) {
-	var tmp;
-	var _this = c.mConnectedInfo;
-	if((__map_reserved["psppl"] != null ? _this.getReserved("psppl") : _this.h["psppl"]) != l) {
-		var _this1 = c.mConnectedInfo;
-		tmp = (__map_reserved["seqNames"] != null ? _this1.getReserved("seqNames") : _this1.h["seqNames"]) == l;
-	} else {
-		tmp = true;
+kretha_CladeColorer.same = function(l1,l2) {
+	if(l1.length != l2.length) {
+		return false;
 	}
-	if(tmp) {
+	var _g_head = l1.h;
+	while(_g_head != null) {
+		var val = _g_head.item;
+		_g_head = _g_head.next;
+		var x = val;
+		var found = false;
+		var _g_head1 = l2.h;
+		while(_g_head1 != null) {
+			var val1 = _g_head1.item;
+			_g_head1 = _g_head1.next;
+			var y = val1;
+			if(x == y) {
+				found = true;
+				break;
+			}
+		}
+		if(!found) {
+			return false;
+		}
+	}
+	return true;
+};
+kretha_CladeColorer.findClade = function(c,l) {
+	var _this = c.mConnectedInfo;
+	if(kretha_CladeColorer.same(__map_reserved["seqNames"] != null ? _this.getReserved("seqNames") : _this.h["seqNames"],l)) {
 		return c;
 	}
 	var _g_head = c.mChilds.h;
@@ -1738,15 +1757,9 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 	if(c.mChilds.length == 0) {
 		var _this = c.mConnectedInfo;
 		l.add(__map_reserved["seqNames"] != null ? _this.getReserved("seqNames") : _this.h["seqNames"]);
-		var _this1 = c.mConnectedInfo;
-		var value = l.first();
-		if(__map_reserved["psppl"] != null) {
-			_this1.setReserved("psppl",value);
-		} else {
-			_this1.h["psppl"] = value;
-		}
 		return l;
 	}
+	var terminalSeqList = new List();
 	var s = new List();
 	var _g_head = c.mChilds.h;
 	while(_g_head != null) {
@@ -1755,6 +1768,21 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var child = val;
 		var sub = kretha_FourTimesRule.speciesInClade(child,decisionRatio);
 		s.add(sub);
+		var _this1 = child.mConnectedInfo;
+		var childSeqs = __map_reserved["seqNames"] != null ? _this1.getReserved("seqNames") : _this1.h["seqNames"];
+		var _g_head1 = childSeqs.h;
+		while(_g_head1 != null) {
+			var val1 = _g_head1.item;
+			_g_head1 = _g_head1.next;
+			var seq = val1;
+			terminalSeqList.add(seq);
+		}
+	}
+	var _this2 = c.mConnectedInfo;
+	if(__map_reserved["seqNames"] != null) {
+		_this2.setReserved("seqNames",terminalSeqList);
+	} else {
+		_this2.h["seqNames"] = terminalSeqList;
 	}
 	if(s.length != 2) {
 		throw new js__$Boot_HaxeError("WTF?");
@@ -1770,16 +1798,16 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		console.log(Std.string(seqsA) + " " + Std.string(seqsA));
 		var comparisons = 0;
 		var diff = 0;
-		var _g_head1 = seqsA.h;
-		while(_g_head1 != null) {
-			var val1 = _g_head1.item;
-			_g_head1 = _g_head1.next;
-			var seq1 = val1;
-			var _g_head2 = seqsB.h;
-			while(_g_head2 != null) {
-				var val2 = _g_head2.item;
-				_g_head2 = _g_head2.next;
-				var seq2 = val2;
+		var _g_head2 = seqsA.h;
+		while(_g_head2 != null) {
+			var val2 = _g_head2.item;
+			_g_head2 = _g_head2.next;
+			var seq1 = val2;
+			var _g_head3 = seqsB.h;
+			while(_g_head3 != null) {
+				var val3 = _g_head3.item;
+				_g_head3 = _g_head3.next;
+				var seq2 = val3;
 				var _g1 = 0;
 				var _g = seq1.mNames.length;
 				while(_g1 < _g) {
@@ -1791,18 +1819,18 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 						++comparisons;
 						var result = 0;
 						if(kretha_FourTimesRule.distanceMatrix != null) {
-							var _this2 = kretha_FourTimesRule.distanceMatrix;
+							var _this3 = kretha_FourTimesRule.distanceMatrix;
 							var ret = 0;
 							if(seq1 != seq2) {
-								var _this3 = _this2.mNamePosLookup.values;
+								var _this4 = _this3.mNamePosLookup.values;
 								var key = seq1.hashCode();
-								var pos1 = _this3.h[key];
+								var pos1 = _this4.h[key];
 								if(pos1 == null) {
 									throw new js__$Boot_HaxeError(Std.string(seq1) + " not in map!");
 								}
-								var _this4 = _this2.mNamePosLookup.values;
+								var _this5 = _this3.mNamePosLookup.values;
 								var key1 = seq2.hashCode();
-								var pos2 = _this4.h[key1];
+								var pos2 = _this5.h[key1];
 								if(pos2 == null) {
 									throw new js__$Boot_HaxeError(Std.string(seq2) + " not in map!");
 								}
@@ -1811,7 +1839,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 									pos1 = pos2;
 									pos2 = swap;
 								}
-								ret = _this2.mValues[pos1 + pos2 * _this2.mWidth];
+								ret = _this3.mValues[pos1 + pos2 * _this3.mWidth];
 							}
 							result = ret;
 						} else {
@@ -1845,21 +1873,21 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var k = diff / comparisons;
 		var seqs = bestClades.first();
 		var n = 0;
-		var _g_head3 = seqs.h;
-		while(_g_head3 != null) {
-			var val3 = _g_head3.item;
-			_g_head3 = _g_head3.next;
-			var seq = val3;
-			n += seq.mNames.length;
-		}
-		var count1 = 0;
-		var diff1 = 0;
-		var c3 = 0;
 		var _g_head4 = seqs.h;
 		while(_g_head4 != null) {
 			var val4 = _g_head4.item;
 			_g_head4 = _g_head4.next;
-			var seq11 = val4;
+			var seq3 = val4;
+			n += seq3.mNames.length;
+		}
+		var count1 = 0;
+		var diff1 = 0;
+		var c3 = 0;
+		var _g_head5 = seqs.h;
+		while(_g_head5 != null) {
+			var val5 = _g_head5.item;
+			_g_head5 = _g_head5.next;
+			var seq11 = val5;
 			var _g12 = 0;
 			var _g5 = seq11.mNames.length;
 			while(_g12 < _g5) {
@@ -1867,9 +1895,9 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 				var d = 0;
 				var _g2_head = seqs.h;
 				while(_g2_head != null) {
-					var val5 = _g2_head.item;
+					var val6 = _g2_head.item;
 					_g2_head = _g2_head.next;
-					var seq21 = val5;
+					var seq21 = val6;
 					var _g31 = 0;
 					var _g21 = seq21.mNames.length;
 					while(_g31 < _g21) {
@@ -1881,18 +1909,18 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 						++count1;
 						var result1 = 0;
 						if(kretha_FourTimesRule.distanceMatrix != null) {
-							var _this5 = kretha_FourTimesRule.distanceMatrix;
+							var _this6 = kretha_FourTimesRule.distanceMatrix;
 							var ret1 = 0;
 							if(seq11 != seq21) {
-								var _this6 = _this5.mNamePosLookup.values;
+								var _this7 = _this6.mNamePosLookup.values;
 								var key2 = seq11.hashCode();
-								var pos11 = _this6.h[key2];
+								var pos11 = _this7.h[key2];
 								if(pos11 == null) {
 									throw new js__$Boot_HaxeError(Std.string(seq11) + " not in map!");
 								}
-								var _this7 = _this5.mNamePosLookup.values;
+								var _this8 = _this6.mNamePosLookup.values;
 								var key3 = seq21.hashCode();
-								var pos21 = _this7.h[key3];
+								var pos21 = _this8.h[key3];
 								if(pos21 == null) {
 									throw new js__$Boot_HaxeError(Std.string(seq21) + " not in map!");
 								}
@@ -1901,7 +1929,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 									pos11 = pos21;
 									pos21 = swap1;
 								}
-								ret1 = _this5.mValues[pos11 + pos21 * _this5.mWidth];
+								ret1 = _this6.mValues[pos11 + pos21 * _this6.mWidth];
 							}
 							result1 = ret1;
 						} else {
@@ -1940,8 +1968,8 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			n = 2;
 		}
 		if(pairwiseDistance == 0) {
-			var _this8 = seqs.first();
-			var seqLen = _this8.mSeq == null ? 0 : _this8.mSeq.length;
+			var _this9 = seqs.first();
+			var seqLen = _this9.mSeq == null ? 0 : _this9.mSeq.length;
 			pairwiseDistance = 1 / seqLen;
 			pi = 2 / (seqLen * (n - 1) * (n - 1));
 		} else {
@@ -1950,21 +1978,21 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var theta1 = pi / (1 - 4 * pi / 3);
 		var seqs1 = bestClades.last();
 		var n1 = 0;
-		var _g_head5 = seqs1.h;
-		while(_g_head5 != null) {
-			var val6 = _g_head5.item;
-			_g_head5 = _g_head5.next;
-			var seq3 = val6;
-			n1 += seq3.mNames.length;
-		}
-		var count3 = 0;
-		var diff2 = 0;
-		var c4 = 0;
 		var _g_head6 = seqs1.h;
 		while(_g_head6 != null) {
 			var val7 = _g_head6.item;
 			_g_head6 = _g_head6.next;
-			var seq12 = val7;
+			var seq4 = val7;
+			n1 += seq4.mNames.length;
+		}
+		var count3 = 0;
+		var diff2 = 0;
+		var c4 = 0;
+		var _g_head7 = seqs1.h;
+		while(_g_head7 != null) {
+			var val8 = _g_head7.item;
+			_g_head7 = _g_head7.next;
+			var seq12 = val8;
 			var _g14 = 0;
 			var _g7 = seq12.mNames.length;
 			while(_g14 < _g7) {
@@ -1972,9 +2000,9 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 				var d1 = 0;
 				var _g2_head1 = seqs1.h;
 				while(_g2_head1 != null) {
-					var val8 = _g2_head1.item;
+					var val9 = _g2_head1.item;
 					_g2_head1 = _g2_head1.next;
-					var seq22 = val8;
+					var seq22 = val9;
 					var _g32 = 0;
 					var _g22 = seq22.mNames.length;
 					while(_g32 < _g22) {
@@ -1986,18 +2014,18 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 						++count3;
 						var result2 = 0;
 						if(kretha_FourTimesRule.distanceMatrix != null) {
-							var _this9 = kretha_FourTimesRule.distanceMatrix;
+							var _this10 = kretha_FourTimesRule.distanceMatrix;
 							var ret2 = 0;
 							if(seq12 != seq22) {
-								var _this10 = _this9.mNamePosLookup.values;
+								var _this11 = _this10.mNamePosLookup.values;
 								var key4 = seq12.hashCode();
-								var pos12 = _this10.h[key4];
+								var pos12 = _this11.h[key4];
 								if(pos12 == null) {
 									throw new js__$Boot_HaxeError(Std.string(seq12) + " not in map!");
 								}
-								var _this11 = _this9.mNamePosLookup.values;
+								var _this12 = _this10.mNamePosLookup.values;
 								var key5 = seq22.hashCode();
-								var pos22 = _this11.h[key5];
+								var pos22 = _this12.h[key5];
 								if(pos22 == null) {
 									throw new js__$Boot_HaxeError(Std.string(seq22) + " not in map!");
 								}
@@ -2006,7 +2034,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 									pos12 = pos22;
 									pos22 = swap2;
 								}
-								ret2 = _this9.mValues[pos12 + pos22 * _this9.mWidth];
+								ret2 = _this10.mValues[pos12 + pos22 * _this10.mWidth];
 							}
 							result2 = ret2;
 						} else {
@@ -2045,8 +2073,8 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			n1 = 2;
 		}
 		if(pairwiseDistance1 == 0) {
-			var _this12 = seqs1.first();
-			var seqLen1 = _this12.mSeq == null ? 0 : _this12.mSeq.length;
+			var _this13 = seqs1.first();
+			var seqLen1 = _this13.mSeq == null ? 0 : _this13.mSeq.length;
 			pairwiseDistance1 = 1 / seqLen1;
 			pi1 = 2 / (seqLen1 * (n1 - 1) * (n1 - 1));
 		} else {
@@ -2061,18 +2089,18 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			var info1 = kretha_FourTimesRule.floatToStringPrecision(k,5) + "/" + kretha_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kretha_FourTimesRule.floatToStringPrecision(ratio,5);
 			c.mInfo.add(info1);
 			if(ratio >= decisionRatio) {
-				var _g_head7 = sA.h;
-				while(_g_head7 != null) {
-					var val9 = _g_head7.item;
-					_g_head7 = _g_head7.next;
-					var n11 = val9;
-					l.add(n11);
-				}
-				var _g_head8 = sB.h;
+				var _g_head8 = sA.h;
 				while(_g_head8 != null) {
 					var val10 = _g_head8.item;
 					_g_head8 = _g_head8.next;
-					var n2 = val10;
+					var n11 = val10;
+					l.add(n11);
+				}
+				var _g_head9 = sB.h;
+				while(_g_head9 != null) {
+					var val11 = _g_head9.item;
+					_g_head9 = _g_head9.next;
+					var n2 = val11;
 					l.add(n2);
 				}
 			} else {
@@ -2081,28 +2109,19 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		} else {
 			kretha_FourTimesRule.mergeSpecies(sA,sB,bestClades.first(),bestClades.last(),l);
 		}
-		if(l.length == 1) {
-			var _this13 = c.mConnectedInfo;
-			var value1 = l.first();
-			if(__map_reserved["psppl"] != null) {
-				_this13.setReserved("psppl",value1);
-			} else {
-				_this13.h["psppl"] = value1;
-			}
-		}
 	} else {
-		var _g_head9 = sA.h;
-		while(_g_head9 != null) {
-			var val11 = _g_head9.item;
-			_g_head9 = _g_head9.next;
-			var n12 = val11;
-			l.add(n12);
-		}
-		var _g_head10 = sB.h;
+		var _g_head10 = sA.h;
 		while(_g_head10 != null) {
 			var val12 = _g_head10.item;
 			_g_head10 = _g_head10.next;
-			var n21 = val12;
+			var n12 = val12;
+			l.add(n12);
+		}
+		var _g_head11 = sB.h;
+		while(_g_head11 != null) {
+			var val13 = _g_head11.item;
+			_g_head11 = _g_head11.next;
+			var n21 = val13;
 			l.add(n21);
 		}
 		console.log("l_ " + Std.string(l));
@@ -2119,18 +2138,18 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			}
 			goOn = false;
 			var i7 = 0;
-			var _g_head11 = l.h;
-			while(_g_head11 != null) {
-				var val13 = _g_head11.item;
-				_g_head11 = _g_head11.next;
-				var s1 = val13;
+			var _g_head12 = l.h;
+			while(_g_head12 != null) {
+				var val14 = _g_head12.item;
+				_g_head12 = _g_head12.next;
+				var s1 = val14;
 				++i7;
 				var j3 = 0;
-				var _g_head12 = l.h;
-				while(_g_head12 != null) {
-					var val14 = _g_head12.item;
-					_g_head12 = _g_head12.next;
-					var s2 = val14;
+				var _g_head13 = l.h;
+				while(_g_head13 != null) {
+					var val15 = _g_head13.item;
+					_g_head13 = _g_head13.next;
+					var s2 = val15;
 					++j3;
 					if(i7 >= j3) {
 						continue;
@@ -2138,16 +2157,16 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 					console.log(Std.string(s1) + " " + Std.string(s1));
 					var comparisons1 = 0;
 					var diff3 = 0;
-					var _g_head13 = s1.h;
-					while(_g_head13 != null) {
-						var val15 = _g_head13.item;
-						_g_head13 = _g_head13.next;
-						var seq13 = val15;
-						var _g_head14 = s2.h;
-						while(_g_head14 != null) {
-							var val16 = _g_head14.item;
-							_g_head14 = _g_head14.next;
-							var seq23 = val16;
+					var _g_head14 = s1.h;
+					while(_g_head14 != null) {
+						var val16 = _g_head14.item;
+						_g_head14 = _g_head14.next;
+						var seq13 = val16;
+						var _g_head15 = s2.h;
+						while(_g_head15 != null) {
+							var val17 = _g_head15.item;
+							_g_head15 = _g_head15.next;
+							var seq23 = val17;
 							var _g17 = 0;
 							var _g10 = seq13.mNames.length;
 							while(_g17 < _g10) {
@@ -2212,21 +2231,21 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 					}
 					var k1 = diff3 / comparisons1;
 					var n3 = 0;
-					var _g_head15 = s1.h;
-					while(_g_head15 != null) {
-						var val17 = _g_head15.item;
-						_g_head15 = _g_head15.next;
-						var seq4 = val17;
-						n3 += seq4.mNames.length;
-					}
-					var count6 = 0;
-					var diff4 = 0;
-					var c5 = 0;
 					var _g_head16 = s1.h;
 					while(_g_head16 != null) {
 						var val18 = _g_head16.item;
 						_g_head16 = _g_head16.next;
-						var seq14 = val18;
+						var seq5 = val18;
+						n3 += seq5.mNames.length;
+					}
+					var count6 = 0;
+					var diff4 = 0;
+					var c5 = 0;
+					var _g_head17 = s1.h;
+					while(_g_head17 != null) {
+						var val19 = _g_head17.item;
+						_g_head17 = _g_head17.next;
+						var seq14 = val19;
 						var _g110 = 0;
 						var _g20 = seq14.mNames.length;
 						while(_g110 < _g20) {
@@ -2234,9 +2253,9 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							var d2 = 0;
 							var _g2_head2 = s1.h;
 							while(_g2_head2 != null) {
-								var val19 = _g2_head2.item;
+								var val20 = _g2_head2.item;
 								_g2_head2 = _g2_head2.next;
-								var seq24 = val19;
+								var seq24 = val20;
 								var _g34 = 0;
 								var _g24 = seq24.mNames.length;
 								while(_g34 < _g24) {
@@ -2316,21 +2335,21 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 					}
 					var theta11 = pi2 / (1 - 4 * pi2 / 3);
 					var n4 = 0;
-					var _g_head17 = s2.h;
-					while(_g_head17 != null) {
-						var val20 = _g_head17.item;
-						_g_head17 = _g_head17.next;
-						var seq5 = val20;
-						n4 += seq5.mNames.length;
-					}
-					var count8 = 0;
-					var diff5 = 0;
-					var c6 = 0;
 					var _g_head18 = s2.h;
 					while(_g_head18 != null) {
 						var val21 = _g_head18.item;
 						_g_head18 = _g_head18.next;
-						var seq15 = val21;
+						var seq6 = val21;
+						n4 += seq6.mNames.length;
+					}
+					var count8 = 0;
+					var diff5 = 0;
+					var c6 = 0;
+					var _g_head19 = s2.h;
+					while(_g_head19 != null) {
+						var val22 = _g_head19.item;
+						_g_head19 = _g_head19.next;
+						var seq15 = val22;
 						var _g112 = 0;
 						var _g26 = seq15.mNames.length;
 						while(_g112 < _g26) {
@@ -2338,9 +2357,9 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							var d3 = 0;
 							var _g2_head3 = s2.h;
 							while(_g2_head3 != null) {
-								var val22 = _g2_head3.item;
+								var val23 = _g2_head3.item;
 								_g2_head3 = _g2_head3.next;
-								var seq25 = val22;
+								var seq25 = val23;
 								var _g35 = 0;
 								var _g27 = seq25.mNames.length;
 								while(_g35 < _g27) {
@@ -2434,22 +2453,22 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 							combined.add(j3);
 							if(toCombine.h.hasOwnProperty(i7)) {
 								var xI = toCombine.h[i7];
-								var _g_head19 = xI.h;
-								while(_g_head19 != null) {
-									var val23 = _g_head19.item;
-									_g_head19 = _g_head19.next;
-									var s3 = val23;
+								var _g_head20 = xI.h;
+								while(_g_head20 != null) {
+									var val24 = _g_head20.item;
+									_g_head20 = _g_head20.next;
+									var s3 = val24;
 									combined.add(s3);
 								}
 								toCombine.remove(i7);
 							}
 							if(toCombine.h.hasOwnProperty(j3)) {
 								var xJ = toCombine.h[j3];
-								var _g_head20 = xJ.h;
-								while(_g_head20 != null) {
-									var val24 = _g_head20.item;
-									_g_head20 = _g_head20.next;
-									var s4 = val24;
+								var _g_head21 = xJ.h;
+								while(_g_head21 != null) {
+									var val25 = _g_head21.item;
+									_g_head21 = _g_head21.next;
+									var s4 = val25;
 									combined.add(s4);
 								}
 								toCombine.remove(j3);
@@ -2470,27 +2489,27 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 				if(xL1.isEmpty()) {
 					throw new js__$Boot_HaxeError("sL is Empty " + Std.string(toCombine));
 				}
-				var _g_head21 = xL1.h;
-				while(_g_head21 != null) {
-					var val25 = _g_head21.item;
-					_g_head21 = _g_head21.next;
-					var x = val25;
+				var _g_head22 = xL1.h;
+				while(_g_head22 != null) {
+					var val26 = _g_head22.item;
+					_g_head22 = _g_head22.next;
+					var x = val26;
 					if(alreadyDone_h.hasOwnProperty(x)) {
 						continue;
 					}
 					var idx = 0;
-					var _g_head22 = l.h;
-					while(_g_head22 != null) {
-						var val26 = _g_head22.item;
-						_g_head22 = _g_head22.next;
-						var s11 = val26;
+					var _g_head23 = l.h;
+					while(_g_head23 != null) {
+						var val27 = _g_head23.item;
+						_g_head23 = _g_head23.next;
+						var s11 = val27;
 						++idx;
 						if(idx == x) {
-							var _g_head23 = s11.h;
-							while(_g_head23 != null) {
-								var val27 = _g_head23.item;
-								_g_head23 = _g_head23.next;
-								var ele = val27;
+							var _g_head24 = s11.h;
+							while(_g_head24 != null) {
+								var val28 = _g_head24.item;
+								_g_head24 = _g_head24.next;
+								var ele = val28;
 								sL.add(ele);
 							}
 							break;
@@ -2510,9 +2529,20 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 	console.log("output: " + Std.string(l) + " " + l.length);
 	return l;
 };
+kretha_FourTimesRule.initColors = function(c,l) {
+	var _this = c.mConnectedInfo;
+	var value = l.first();
+	if(__map_reserved["psppl"] != null) {
+		_this.setReserved("psppl",value);
+	} else {
+		_this.h["psppl"] = value;
+	}
+};
 kretha_FourTimesRule.doRule = function(c,decisionRatio) {
 	kretha_FourTimesRule.seqsInClade(c);
-	return kretha_FourTimesRule.speciesInClade(c,decisionRatio);
+	var result = kretha_FourTimesRule.speciesInClade(c,decisionRatio);
+	kretha_FourTimesRule.initColors(c,result);
+	return result;
 };
 var kretha_Graph = function(nodeInfo) {
 	var this1 = new haxe_ds__$HashMap_HashMapData();

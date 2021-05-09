@@ -183,15 +183,22 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         var l:List<List<Sequence>> = new List<List<Sequence>>();
         if (c.isTerminal()) {
             l.add(c.mConnectedInfo.get("seqNames"));
-            c.mConnectedInfo.set("psppl", l.first());
             return l;
         }
+
+        var terminalSeqList:List<Sequence> = new List<Sequence>();
         var s:List<List<List<Sequence>>> = new List<List<List<Sequence>>>();
         for (child in c.getChilds()) {
             var sub:List<List<Sequence>> = speciesInClade(child, decisionRatio);
             s.add(sub);
 //            c.addInfo("" + sub);
+            var childSeqs:List<Sequence> = cast child.mConnectedInfo.get("seqNames");
+            for (seq in childSeqs) {
+                terminalSeqList.add(seq);
+            }
         }
+        c.mConnectedInfo.set("seqNames", terminalSeqList);
+
         if (s.length != 2) throw "WTF?";
         var sA:List<List<Sequence>> = s.first();
         var sB:List<List<Sequence>> = s.last();
@@ -225,9 +232,6 @@ trace("=== " + sA + " " + sB + " ===");
                 }
             } else {
                 mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
-            }
-            if (l.length == 1) {
-                c.mConnectedInfo.set("psppl", l.first());
             }
         } else {
             // ok, put everything into l
@@ -330,9 +334,15 @@ trace("output: " + l + " " + l.length);
         return l;
     }
 
+    private static function initColors(c:Clade, l:List<List<Sequence>>):Void {
+        c.mConnectedInfo.set("psppl", l.first());
+    }
+
     public static function doRule(c:Clade, decisionRatio:Float):List<List<Sequence>> {
         seqsInClade(c);
-        return speciesInClade(c, decisionRatio);
+        var result:List<List<Sequence>> = speciesInClade(c, decisionRatio);
+        initColors(c, result);
+        return result;
     }
 
 }
