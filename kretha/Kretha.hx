@@ -52,6 +52,7 @@ class Kretha {
             var fileContent:String = cast(e.data.txt, String);
             var decisionRatio:Float = cast(e.data.decisionRatio, Float);
             var globalDeletion:Bool = cast(e.data.globalDeletion, Bool);
+            var transivity:Bool = cast(e.data.transivity, Bool);
             var g:Graph<Sequence,Float> = null;
             if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
                 var reader:FastaAlignmentReader = new FastaAlignmentReader();
@@ -64,7 +65,7 @@ class Kretha {
                 FourTimesRule.distanceMatrix = d;
             }
             var c:Clade = MidPointRooter.root(g);
-            var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio);
+            var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transivity);
             var resL:String = formatSpeciesList(s);
             CladeColorer.colorClades(c, s);
             var svg:String = c.getSVG();
@@ -113,7 +114,7 @@ class Kretha {
             FourTimesRule.distanceMatrix = d;
         }
         var c:Clade = MidPointRooter.root(g);
-        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio);
+        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, true);
         Sys.stdout().writeString("=== List of putative species ===\n");
         var id:Int = 0;
         for (lst in s) {

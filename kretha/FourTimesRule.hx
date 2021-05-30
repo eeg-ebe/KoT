@@ -15,6 +15,8 @@
  */
 package kretha;
 
+import haxe.ds.IntMap;
+
 /**
  * Implementation of the 4x rule.
  *
@@ -61,6 +63,7 @@ class FourTimesRule {
     }
 
     public static inline function calcPairwiseDistanceOfSubClades(seqsA:List<Sequence>, seqsB:List<Sequence>):Float {
+trace(seqsA + " " + seqsA);
         var comparisons:Float = 0, diff:Float = 0;
         for (seq1 in seqsA) {
             for (seq2 in seqsB) {
@@ -176,23 +179,31 @@ public static function floatToStringPrecision(n:Float, prec:Int){
 }
 
 
-    public static function speciesInClade(c:Clade, decisionRatio:Float):List<List<Sequence>> {
+    public static function speciesInClade(c:Clade, decisionRatio:Float, transitivity:Bool):List<List<Sequence>> {
         var l:List<List<Sequence>> = new List<List<Sequence>>();
         if (c.isTerminal()) {
             l.add(c.mConnectedInfo.get("seqNames"));
-            c.mConnectedInfo.set("psppl", l.first());
             return l;
         }
+
+        var terminalSeqList:List<Sequence> = new List<Sequence>();
         var s:List<List<List<Sequence>>> = new List<List<List<Sequence>>>();
         for (child in c.getChilds()) {
-            var sub:List<List<Sequence>> = speciesInClade(child, decisionRatio);
+            var sub:List<List<Sequence>> = speciesInClade(child, decisionRatio, transitivity);
             s.add(sub);
 //            c.addInfo("" + sub);
+            var childSeqs:List<Sequence> = cast child.mConnectedInfo.get("seqNames");
+            for (seq in childSeqs) {
+                terminalSeqList.add(seq);
+            }
         }
+        c.mConnectedInfo.set("seqNames", terminalSeqList);
+
         if (s.length != 2) throw "WTF?";
         var sA:List<List<Sequence>> = s.first();
         var sB:List<List<Sequence>> = s.last();
         var nSpecies:Int = sA.length + sB.length;
+trace("=== " + sA + " " + sB + " ===");
         if (nSpecies == 2) {
             var bestClades:List<List<Sequence>> = getBestSubClades(sA, sB, c);
             var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
@@ -222,70 +233,100 @@ public static function floatToStringPrecision(n:Float, prec:Int){
             } else {
                 mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
             }
-            if (l.length == 1) {
-                c.mConnectedInfo.set("psppl", l.first());
+        } else if (transitivity) {
+            // ok, put everything into l
+            for (n1 in sA) {
+                l.add(n1);
             }
-        } else if (nSpecies == 3) {
-            var diffCount:Int = 0;
-            var sX:List<Sequence> = null;
-            var sY:List<Sequence> = null;
-            for (s1 in sA) {
-                for (s2 in sB) {
-                    var k:Float = calcPairwiseDistanceOfSubClades(s1, s2);
-                    var theta1:Float = calcTheta(s1, c);
-                    var theta2:Float = calcTheta(s2, c);
-                    c.addInfo(s1 + " " + s2);
-                    c.addInfo(floatToStringPrecision(theta1, 5) + "(" + s1.length + ") " + floatToStringPrecision(theta2, 5) + "(" + s2.length + ")");
-                    var theta:Float = (theta1 > theta2) ? theta1 : theta2;
-                    if (theta != -1) {
-                        var ratio:Float = k / theta;
-                        c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
-                        if (ratio >= decisionRatio) {
-                            ++diffCount;
-                        } else {
-                            sX = s1;
-                            sY = s2;
+            for (n2 in sB) {
+                l.add(n2);
+            }
+trace("l_ " + l);
+            // no check whether we need to combine
+            var goOn:Bool = true;
+            while (goOn) {
+                var toCombine:IntMap<List<Int>> = new IntMap<List<Int>>();
+                for (i in 0...l.length) {
+                    var lxxx:List<Int> = new List<Int>();
+                    lxxx.add(i + 1);
+                    toCombine.set(i + 1, lxxx);
+                }
+                goOn = false;
+                var i:Int = 0;
+                for (s1 in l) {
+                    i++;
+                    var j:Int = 0;
+                    for (s2 in l) {
+                        j++;
+                        if (i >= j) {
+                            continue;
+                        }
+                        var k:Float = calcPairwiseDistanceOfSubClades(s1, s2);
+                        var theta1:Float = calcTheta(s1, c);
+                        var theta2:Float = calcTheta(s2, c);
+                        c.addInfo(s1 + " " + s2);
+                        c.addInfo(floatToStringPrecision(theta1, 5) + "(" + s1.length + ") " + floatToStringPrecision(theta2, 5) + "(" + s2.length + ")");
+                        var theta:Float = (theta1 > theta2) ? theta1 : theta2;
+                        if (theta != -1) {
+                            var ratio:Float = k / theta;
+                            c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
+                            if (ratio < decisionRatio) {
+                                // Same
+                                goOn = true;
+                                var combined:List<Int> = new List<Int>();
+                                combined.add(i);
+                                combined.add(j);
+                                if (toCombine.exists(i)) {
+                                    var xI:List<Int> = toCombine.get(i);
+                                    for (s in xI) {
+                                        combined.add(s);
+                                    }
+                                    toCombine.remove(i);
+                                }
+                                if (toCombine.exists(j)) {
+                                    var xJ:List<Int> = toCombine.get(j);
+                                    for (s in xJ) {
+                                        combined.add(s);
+                                    }
+                                    toCombine.remove(j);
+                                }
+                                var minVal:Int = (i > j) ? j : i;
+                                toCombine.set(minVal, combined);
+                            }
                         }
                     }
                 }
-            }
-            if (diffCount == 0) { // 3 different. Easy
-                var ll:List<Sequence> = new List<Sequence>();
-                for (n1 in sA) {
-                    for(ind in n1) {
-                        ll.add(ind);
+trace("toCombine: " + toCombine);
+                // toCombine
+                var newL:List<List<Sequence>> = new List<List<Sequence>>();
+                for (xL in toCombine) {
+                    var alreadyDone:IntMap<Bool> = new IntMap<Bool>();
+                    var sL:List<Sequence> = new List<Sequence>();
+                    if (xL.isEmpty()) { // security check
+                        throw "sL is Empty " + toCombine;
                     }
-                }
-                for (n2 in sB) {
-                    for(ind in n2) {
-                        ll.add(ind);
+                    for (x in xL) {
+                        if (alreadyDone.exists(x)) {
+                            continue;
+                        }
+                        var idx:Int = 0;
+                        for (s1 in l) {
+                            idx++;
+                            if (idx == x) {
+                                for (ele in s1) {
+                                    sL.add(ele);
+                                }
+                                break;
+                            }
+                        }
+                        if (sL.isEmpty()) {
+                            throw "Index " + x + " not found!";
+                        }
+                        alreadyDone.set(x, true);
                     }
+                    newL.add(sL);
                 }
-                l.add(ll);
-            } else if (diffCount == 1) { // 2 different. Which one ...
-                var ll1:List<Sequence> = new List<Sequence>();
-                var ll2:List<Sequence> = new List<Sequence>();
-                for (n in sX) ll1.add(n);
-                for (n in sY) ll1.add(n);
-                for (s in sA) {
-                    if (s != sX && s != sY) {
-                        ll2 = s;
-                    }
-                }
-                for (s in sB) {
-                    if (s != sX && s != sY) {
-                        ll2 = s;
-                    }
-                }
-                l.add(ll1);
-                l.add(ll2);
-            } else { // 3 same. Easy
-                for (n1 in sA) {
-                    l.add(n1);
-                }
-                for (n2 in sB) {
-                    l.add(n2);
-                }
+                l = newL;
             }
         } else {
             for (n1 in sA) {
@@ -296,12 +337,19 @@ public static function floatToStringPrecision(n:Float, prec:Int){
             }
         }
         c.addInfo("" + l);
+trace("output: " + l + " " + l.length);
         return l;
     }
 
-    public static function doRule(c:Clade, decisionRatio:Float):List<List<Sequence>> {
+    private static function initColors(c:Clade, l:List<List<Sequence>>):Void {
+        c.mConnectedInfo.set("psppl", l.first());
+    }
+
+    public static function doRule(c:Clade, decisionRatio:Float, transitivity:Bool):List<List<Sequence>> {
         seqsInClade(c);
-        return speciesInClade(c, decisionRatio);
+        var result:List<List<Sequence>> = speciesInClade(c, decisionRatio, transitivity);
+        initColors(c, result);
+        return result;
     }
 
 }

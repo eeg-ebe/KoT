@@ -16,7 +16,7 @@
             <div class="navigation">
                 <a href="index.html">Back to startpage</a>
                 <a href="faq.html">FAQ</a>
-                <a href="mailto: jflot@ulb.ac.be,birky@arizona.edu">E-Mail the author</a>
+                <a href="mailto: yspori@ulb.ac.be,jflot@ulb.ac.be,birky@arizona.edu">E-Mail the author</a>
             </div>
             <h2></h2>
             <br>
@@ -29,6 +29,7 @@
             <br>
             <input id="decisionRatio" type="text" placeholder="Decision Ratio" value="4" />
             <input id="globalDel" type="checkbox" />Global Deletion<br>
+            <input id="transivity" type="checkbox" checked="checked"/>Transivity<br>
             <br><br>
             <span class="middle">
                 <button onclick="calculate()">Calculate</button>
@@ -43,7 +44,7 @@
             <div class="navigation">
                 <a href="index.html">Back to startpage</a>
                 <a href="faq.html">FAQ</a>
-                <a href="mailto: jflot@ulb.ac.be">E-Mail the author</a>
+                <a href="mailto: yspori@ulb.ac.be,jflot@ulb.ac.be,birky@arizona.edu">E-Mail the author</a>
             </div>
         </div>
         <script>
@@ -65,6 +66,7 @@ function calculate() {
     var ratio = parseFloat(ratioTxt);
 
     var globalDel = document.getElementById('globalDel').checked;
+    var transivity = document.getElementById('transivity').checked;
 
     var worker = new Worker("kretha.js");
     worker.addEventListener("message", function(e) {
@@ -89,7 +91,7 @@ function calculate() {
     }
     var reader = new FileReader();
     reader.onload = function(data) {
-        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio, "globalDeletion" : globalDel});
+        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio, "globalDeletion" : globalDel, "transivity" : transivity});
     };
     reader.readAsText(files[0]);
 }
