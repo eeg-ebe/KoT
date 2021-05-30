@@ -179,7 +179,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
 }
 
 
-    public static function speciesInClade(c:Clade, decisionRatio:Float):List<List<Sequence>> {
+    public static function speciesInClade(c:Clade, decisionRatio:Float, transitivity:Bool):List<List<Sequence>> {
         var l:List<List<Sequence>> = new List<List<Sequence>>();
         if (c.isTerminal()) {
             l.add(c.mConnectedInfo.get("seqNames"));
@@ -189,7 +189,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         var terminalSeqList:List<Sequence> = new List<Sequence>();
         var s:List<List<List<Sequence>>> = new List<List<List<Sequence>>>();
         for (child in c.getChilds()) {
-            var sub:List<List<Sequence>> = speciesInClade(child, decisionRatio);
+            var sub:List<List<Sequence>> = speciesInClade(child, decisionRatio, transitivity);
             s.add(sub);
 //            c.addInfo("" + sub);
             var childSeqs:List<Sequence> = cast child.mConnectedInfo.get("seqNames");
@@ -233,7 +233,7 @@ trace("=== " + sA + " " + sB + " ===");
             } else {
                 mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
             }
-        } else {
+        } else if (transitivity) {
             // ok, put everything into l
             for (n1 in sA) {
                 l.add(n1);
@@ -328,6 +328,13 @@ trace("toCombine: " + toCombine);
                 }
                 l = newL;
             }
+        } else {
+            for (n1 in sA) {
+                l.add(n1);
+            }
+            for (n2 in sB) {
+                l.add(n2);
+            }
         }
         c.addInfo("" + l);
 trace("output: " + l + " " + l.length);
@@ -338,9 +345,9 @@ trace("output: " + l + " " + l.length);
         c.mConnectedInfo.set("psppl", l.first());
     }
 
-    public static function doRule(c:Clade, decisionRatio:Float):List<List<Sequence>> {
+    public static function doRule(c:Clade, decisionRatio:Float, transitivity:Bool):List<List<Sequence>> {
         seqsInClade(c);
-        var result:List<List<Sequence>> = speciesInClade(c, decisionRatio);
+        var result:List<List<Sequence>> = speciesInClade(c, decisionRatio, transitivity);
         initColors(c, result);
         return result;
     }

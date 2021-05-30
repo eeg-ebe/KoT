@@ -532,8 +532,13 @@ kretha_Clade.prototype = {
 	}
 	,setParent: function(clade,dist) {
 		this.mParent = clade;
-		this.mDist = dist;
+		if(dist != null) {
+			this.mDist = dist;
+		}
 		clade.mChilds.add(this);
+	}
+	,setDist: function(dist) {
+		this.mDist = dist;
 	}
 	,getChilds: function() {
 		return this.mChilds;
@@ -1752,7 +1757,7 @@ kretha_FourTimesRule.floatToStringPrecision = function(n,prec) {
 		return HxOverrides.substr(str,0,str.length - prec) + "." + HxOverrides.substr(str,str.length - prec,null);
 	}
 };
-kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
+kretha_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 	var l = new List();
 	if(c.mChilds.length == 0) {
 		var _this = c.mConnectedInfo;
@@ -1766,7 +1771,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		var val = _g_head.item;
 		_g_head = _g_head.next;
 		var child = val;
-		var sub = kretha_FourTimesRule.speciesInClade(child,decisionRatio);
+		var sub = kretha_FourTimesRule.speciesInClade(child,decisionRatio,transitivity);
 		s.add(sub);
 		var _this1 = child.mConnectedInfo;
 		var childSeqs = __map_reserved["seqNames"] != null ? _this1.getReserved("seqNames") : _this1.h["seqNames"];
@@ -2109,7 +2114,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 		} else {
 			kretha_FourTimesRule.mergeSpecies(sA,sB,bestClades.first(),bestClades.last(),l);
 		}
-	} else {
+	} else if(transitivity) {
 		var _g_head10 = sA.h;
 		while(_g_head10 != null) {
 			var val12 = _g_head10.item;
@@ -2524,6 +2529,21 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio) {
 			}
 			l = newL;
 		}
+	} else {
+		var _g_head25 = sA.h;
+		while(_g_head25 != null) {
+			var val29 = _g_head25.item;
+			_g_head25 = _g_head25.next;
+			var n13 = val29;
+			l.add(n13);
+		}
+		var _g_head26 = sB.h;
+		while(_g_head26 != null) {
+			var val30 = _g_head26.item;
+			_g_head26 = _g_head26.next;
+			var n22 = val30;
+			l.add(n22);
+		}
 	}
 	c.mInfo.add("" + Std.string(l));
 	console.log("output: " + Std.string(l) + " " + l.length);
@@ -2538,9 +2558,9 @@ kretha_FourTimesRule.initColors = function(c,l) {
 		_this.h["psppl"] = value;
 	}
 };
-kretha_FourTimesRule.doRule = function(c,decisionRatio) {
+kretha_FourTimesRule.doRule = function(c,decisionRatio,transitivity) {
 	kretha_FourTimesRule.seqsInClade(c);
-	var result = kretha_FourTimesRule.speciesInClade(c,decisionRatio);
+	var result = kretha_FourTimesRule.speciesInClade(c,decisionRatio,transitivity);
 	kretha_FourTimesRule.initColors(c,result);
 	return result;
 };
@@ -2730,6 +2750,7 @@ kretha_Kretha.onMessage = function(e) {
 		var fileContent = js_Boot.__cast(e.data.txt , String);
 		var decisionRatio = js_Boot.__cast(e.data.decisionRatio , Float);
 		var globalDeletion = js_Boot.__cast(e.data.globalDeletion , Bool);
+		var transivity = js_Boot.__cast(e.data.transivity , Bool);
 		var g = null;
 		if(fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
 			var reader = new kretha_FastaAlignmentReader();
@@ -2742,7 +2763,7 @@ kretha_Kretha.onMessage = function(e) {
 			kretha_FourTimesRule.distanceMatrix = d;
 		}
 		var c = kretha_MidPointRooter.root(g);
-		var s = kretha_FourTimesRule.doRule(c,decisionRatio);
+		var s = kretha_FourTimesRule.doRule(c,decisionRatio,transivity);
 		var resL = kretha_Kretha.formatSpeciesList(s);
 		kretha_CladeColorer.colorClades(c,s);
 		var svg = c.getSVG();
@@ -2918,7 +2939,9 @@ kretha_MidPointRooter.genSubClade = function(g,process,commingFrom,parentClade,d
 	}
 	clade.mInfo.add(result);
 	clade.mParent = parentClade;
-	clade.mDist = dist;
+	if(dist != null) {
+		clade.mDist = dist;
+	}
 	parentClade.mChilds.add(clade);
 	var _g_head;
 	var _this2 = g.mNodes.values;

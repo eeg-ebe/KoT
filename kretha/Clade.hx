@@ -78,8 +78,14 @@ class Clade {
      */
     public inline function setParent(clade:Clade, dist:Float):Void {
         mParent = clade;
-        mDist = dist;
+        if (dist != null) {
+            mDist = dist;
+        }
         clade.mChilds.add(this);
+    }
+
+    public inline function setDist(dist:Float):Void {
+        mDist = dist;
     }
 
     /**
