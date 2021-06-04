@@ -204,7 +204,7 @@ public static function floatToStringPrecision(n:Float, prec:Int){
         var sB:List<List<Sequence>> = s.last();
         var nSpecies:Int = sA.length + sB.length;
 trace("=== " + sA + " " + sB + " ===");
-        if (nSpecies == 2) {
+        if (!transitivity) { //nSpecies == 2) {
             var bestClades:List<List<Sequence>> = getBestSubClades(sA, sB, c);
             var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
             var theta1:Float = calcTheta(bestClades.first(), c);

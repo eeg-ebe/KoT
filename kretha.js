@@ -1796,7 +1796,7 @@ kretha_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 	var sB = s.last();
 	var nSpecies = sA.length + sB.length;
 	console.log("=== " + Std.string(sA) + " " + Std.string(sB) + " ===");
-	if(nSpecies == 2) {
+	if(!transitivity) {
 		var bestClades = kretha_FourTimesRule.getBestSubClades(sA,sB,c);
 		var seqsA = bestClades.first();
 		var seqsB = bestClades.last();
