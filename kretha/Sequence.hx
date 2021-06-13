@@ -19,7 +19,7 @@ import haxe.ds.IntMap;
 
 /**
  * A Sequence.
- * 
+ *
  * @author Yann Spoeri
  */
 class Sequence {
@@ -72,7 +72,7 @@ class Sequence {
     }
 
     public inline function isAmbChar(c:String) {
-        return !(c == '-' || c == 'A' || c == 'T' || c == 'G' || c == 'C');
+        return !(c == 'A' || c == 'T' || c == 'G' || c == 'C');
     }
 
     /**
