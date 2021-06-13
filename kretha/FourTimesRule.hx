@@ -36,7 +36,7 @@ class FourTimesRule {
         }
         return result;
     }
-    
+
     public static inline function calcPairwiseDistance(seqs:List<Sequence>):Float {
         var count:Int = 0, diff:Float = 0;
 
@@ -99,7 +99,7 @@ trace(seqsA + " " + seqsA);
 //c.addInfo("n " + n + " " + seqs + ", d " + floatToStringPrecision(pairwiseDistance, 3) + ", pi " + floatToStringPrecision(pi, 3));
         return pi / (1 - 4 * pi / 3);
     }
-    
+
     public static function getBestSubClades(subCladeA:List<List<Sequence>>, subCladeB:List<List<Sequence>>, c:Clade):List<List<Sequence>> {
 /*        var best:Float = Math.POSITIVE_INFINITY;
         var a:List<Sequence> = null, b:List<Sequence> = null;
@@ -144,7 +144,7 @@ trace(seqsA + " " + seqsA);
         }
         l.add(u);
     }
-    
+
     public static function seqsInClade(c:Clade):List<Sequence> {
         var l:List<Sequence> = new List<Sequence>();
         var seq:Sequence = c.mConnectedInfo.get("sequence");
@@ -234,6 +234,21 @@ trace("=== " + sA + " " + sB + " ===");
                 mergeSpecies(sA, sB, bestClades.first(), bestClades.last(), l);
             }
         } else if (transitivity) {
+            // check whether there is a pair between sA and sB that "fits". If yes, set goOn to true
+            var goOn:Bool = false;
+            var bestClades:List<List<Sequence>> = getBestSubClades(sA, sB, c);
+            var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
+            var theta1:Float = calcTheta(bestClades.first(), c);
+            var theta2:Float = calcTheta(bestClades.last(), c);
+            c.addInfo(floatToStringPrecision(theta1, 5) + "(" + bestClades.first().length + ") " + floatToStringPrecision(theta2, 5) + "(" + bestClades.last().length + ")");
+            var theta:Float = (theta1 > theta2) ? theta1 : theta2;
+            if (theta != -1) {
+                var ratio:Float = k / theta;
+                c.addInfo(floatToStringPrecision(k, 5) + "/" + floatToStringPrecision(theta, 5) + "=" + floatToStringPrecision(ratio, 5));
+                if (ratio < decisionRatio) {
+                    goOn = true;
+                }
+            }
             // ok, put everything into l
             for (n1 in sA) {
                 l.add(n1);
@@ -241,9 +256,7 @@ trace("=== " + sA + " " + sB + " ===");
             for (n2 in sB) {
                 l.add(n2);
             }
-trace("l_ " + l);
             // no check whether we need to combine
-            var goOn:Bool = true;
             while (goOn) {
                 var toCombine:IntMap<List<Int>> = new IntMap<List<Int>>();
                 for (i in 0...l.length) {
