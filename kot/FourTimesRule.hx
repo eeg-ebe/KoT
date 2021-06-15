@@ -75,7 +75,7 @@ trace(seqsA + " " + seqsA);
                 }
             }
         }
-        return diff / comparisons;
+        return - (3.0 / 4) * Math.log (1 - 4 * diff / (3.0 * comparisons));
     }
 
     public static inline function calcTheta(seqs:List<Sequence>, c:Clade):Float {
