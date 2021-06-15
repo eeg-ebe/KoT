@@ -92,9 +92,9 @@ trace(seqsA + " " + seqsA);
         if (pairwiseDistance == 0) {
             var seqLen:Int = seqs.first().getLength();
             pairwiseDistance = 1 / seqLen;
-            pi = 2 / (seqLen * (n - 1) * (n - 1));
+            pi = 2 / (seqLen * n * (n - 1));
         } else {
-            pi = pairwiseDistance * n / (n - 1);
+            pi = pairwiseDistance;
         }
 //c.addInfo("n " + n + " " + seqs + ", d " + floatToStringPrecision(pairwiseDistance, 3) + ", pi " + floatToStringPrecision(pi, 3));
         return pi / (1 - 4 * pi / 3);
