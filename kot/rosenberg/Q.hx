@@ -69,11 +69,22 @@ class Q {
         var result = new Q(rn, rm);
         return result;
     }
+    @:op(A * B)
+    public function multBig(o:BigInt):Q {
+        var rn:BigInt = n * o;
+        var result = new Q(rn, m);
+        return result;
+    }
     @:op(A / B)
     public function div(o:Q):Q {
         var rn:BigInt = n * o.m;
         var rm:BigInt = m * o.n;
         var result = new Q(rn, rm);
+        return result;
+    }
+    public function divBig(o:BigInt):Q {
+        var rm:BigInt = m * o;
+        var result = new Q(n, rm);
         return result;
     }
 
@@ -93,5 +104,10 @@ class Q {
         return result;
     }
 
+    public static function main() {
+        var q1:Q = new Q(3, 5);
+        var q2:Q = new Q(10, 2);
+        trace(q1.add(q2));
+    }
 
 }
