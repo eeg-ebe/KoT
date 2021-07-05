@@ -22,36 +22,27 @@ package kot.rosenberg;
  */
 class Lib {
 
-    public inline static function factorial(a:BigInt):BigInt {
-        var result:BigInt = 1;
+    public inline static function factorial(a:Number):Number {
+        var result:Number = new Number(1, 1);
         var i:BigInt = 2;
-        while (i <= a) {
-            result *= i;
+        while (i <= a.getDenominator()) {
+            result = result.multBig(i);
             i++;
         }
         return result;
     }
-    public inline static function multUp(a:BigInt, k:BigInt):BigInt {
-        var result:BigInt = 1;
-        var i:BigInt = a;
-        var till:BigInt = a + k;
-        while (i < till) {
-            result *= i;
+
+    public inline static function multUp(a:Number, k:Number):Number {
+        var result:Number = new Number(1, 1);
+        var i:BigInt = a.getDenominator();
+        var till:Number = a.add(k);
+        while (i < till.getDenominator()) {
+            result = result.multBig(i);
             i++;
         }
         return result;
     }
-    public inline static function comb(n:BigInt, k:BigInt):BigInt {
-        var prodUp:BigInt = 1;
-        var prodDown:BigInt = 1;
-        var i:BigInt = 1;
-        while (i <= k) {
-            prodUp = prodUp * (n + 1 - i);
-            prodDown *= i;
-            i++;
-        }
-        return prodUp / prodDown;
-    }
+
     public inline static function sign(n:BigInt):BigInt {
         var result:BigInt = -1;
         if (n % 2 == 0) {
@@ -59,44 +50,49 @@ class Lib {
         }
         return result;
     }
-
-    public inline static function gjt_term(j, t, k):Q {
-        var k_: = k - 1;
-        
-/*        k_ = k - 1
-    expTerm = exp(-k * k_ * t / 2)
-    upperTerm = ((k << 1) - 1) * sign(k - j) * multup(j, k_)
-    downTerm = factorial(j) * factorial(k - j)
-    result = expTerm * upperTerm / downTerm
-    return result
-*/
+    public inline static function comb(n:Number, k:Number):Number {
+        var prodUp:Number = new Number(1, 1);
+        var prodDown:Number = new Number(1, 1);
+        var i:BigInt = 1;
+        while (i <= k.getDenominator()) {
+            var x:Number = n.addBig(1).subBig(i);
+            prodUp = prodUp.mult(x);
+            prodDown = prodDown.multBig(i);
+            i++;
+        }
+        return prodUp.div(prodDown);
     }
 
-    public inline static function gjt(j:BigInt, t:BigInt):Q {
-        return new Q(1, 1); // TODO
+    public inline static function exp(e:Number):Number {
+        var ef:Float = e.toFloat();
+        var rf:Float = Math.exp(ef);
+        return Number.fromFloat(rf);
+    }
+    public inline static function gjt_term(j:Number, t:Number, k:Number):Number {
+        var k_:Number = k.subBig(1);
+        var expTerm:Number = exp(k.multBig(-1).mult(k_).mult(t).divBig(2));
+        var upperTerm:Number = k.multBig(2).subBig(1).multBig(sign((k.sub(j)).getDenominator())).mult(multUp(j, k_)); //new Number(1,1); // k.mult(2).sub(1).mult(multUp(j, k_)).mult(sign(k.sub(j)));
+        var downTerm:Number = factorial(j).mult(factorial(k.sub(j)));
+        var result:Number = expTerm.mult(upperTerm).div(downTerm);
+        return result;
     }
 
-    public static inline function floatToQ(f:Float):Q {
-        var up:BigInt = Std.int(f * 10E20);
-        var down:BigInt = BigInt.fromString("10E20");
-        return new Q(up, down);
+    public inline static function gjt(j:Number, t:Number):Number {
+        var k:Number = j;
+        var term:Number = gjt_term(j, t, k);
+        var sigma:Number = new Number(1, 1000000);
+        var summe = term;
+        while(term.isBigger(sigma) || k.isSmallerBig(100)) {
+            k = k.addBig(1);
+            term = gjt_term(j, t, k);
+            summe = summe.add(term);
+        }
+        return summe;
     }
 
-
-/*
-def gjt(j, t):
-    k = j
-    term = gjt_term(j, t, k)
-    summe = term
-    while term > sigma or k < 100:
-        k += 1
-        term = gjt_term(j, t, k)
-        summe += term
-#    assert 0 <= summe <= 1, "%s %s %s" % (summe, j, t)
-    return summe
-*/
     public static function main() {
-        trace(multUp(0, 0));
+trace(factorial(new Number(10, 1)).toString());
+/*        trace(multUp(0, 0));
         trace(multUp(1, 0));
         trace(multUp(2, 0));
         trace(multUp(0, 5));
@@ -106,7 +102,7 @@ def gjt(j, t):
         trace(multUp(1, 2));
         trace(multUp(1, 3));
         trace(multUp(1, 4));
-        trace(multUp(2, 4));
+        trace(multUp(2, 4));*/
     }
 
 }

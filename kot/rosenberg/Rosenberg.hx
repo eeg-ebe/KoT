@@ -20,88 +20,74 @@ package kot.rosenberg;
  */
 class Rosenberg {
 
-    public static inline function s(l2:BigInt, l1:BigInt, j:BigInt):Q {
-        var t1u:BigInt = Lib.comb(l1, l2) * Lib.comb(j, l2);
-        var t1d:BigInt = Lib.comb(j + l1, j);
-        var t2u:BigInt = l2 * (j + l1);
-        var t2d:BigInt = l1 * j;
-        var tX:Q = new Q(t1u, t1d);
-        var tY:Q = new Q(t2u, t2d);
+    public static inline function s(l2:Number, l1:Number, j:Number):Number {
+        var t1u:Number = Lib.comb(l1, l2).mult(Lib.comb(j, l2));
+        var t1d:Number = Lib.comb(j.add(l1), j);
+        var t2u:Number = l2.mult(j.add(l1));
+        var t2d:Number = l1.mult(j);
+        var tX:Number = t1u.div(t1d);
+        var tY:Number = t2u.div(t2d);
         return tX.mult(tY);
     }
 
-    public static inline function calcTerm2(ma:BigInt, mb:BigInt, ta:BigInt, tb:BigInt, ra:BigInt, rb:BigInt, g_mata:Q, k_mamb:BigInt, g_mbtb:Q):Q {
-        var summe:Q = new Q(0, 1);
-        var qa:Int = 1;
-        while (qa <= ma) {
-            var s_qamara:Q = s(qa, ma, ra);
-            var qb:Int = 1;
-            while (qb <= mb) {
-                 var s_qbmbrb:Q = s(qb, mb, rb);
-                 var k_qaqb:BigInt = Lib.comb(qa + qb, qa) * (qa + qb - 1);
+    public static inline function calcTerm2(ma:Number, mb:Number, ta:Number, tb:Number, ra:Number, rb:Number, g_mata:Number, k_mamb:Number, g_mbtb:Number):Number {
+        var summe:Number = new Number(0, 1);
+        var qa:Number = new Number(1, 1);
+        while (qa.isSmallerEq(ma)) {
+            var s_qamara:Number = s(qa, ma, ra);
+            var qb:Number = new Number(1, 1);
+            while (qb.isSmallerEq(mb)) {
+                 var s_qbmbrb:Number = s(qb, mb, rb);
+                 var k_qaqb:Number = Lib.comb(qa.add(qb), qa).mult((qa.add(qb).subBig(1)));
                  //           g_mata *    s_qamara *     g_mbtb *     s_qbmbrb *     k_qaqb /       k_mamb
-                 var mult:Q = g_mata.mult(s_qamara).mult(g_mbtb).mult(s_qbmbrb).multBig(k_qaqb).divBig(k_mamb);
+                 var mult:Number = g_mata.mult(s_qamara).mult(g_mbtb).mult(s_qbmbrb).mult(k_qaqb).div(k_mamb);
                  summe = summe.add(mult);
-                 trace("Summe: " + summe + " " + g_mata + " " + s_qamara + " " + g_mbtb + " " + s_qbmbrb + " " + k_qaqb + " " + k_mamb);
-                 qb++;
+                 qb = qb.addBig(1);
             }
-            qa++;
-        }
-        return summe;        
-    }
-
-    public static inline function calcTerm(ma:BigInt, ta:BigInt, tb:BigInt, ra:BigInt, rb:BigInt, g_mata:Q):Q {
-        var mb:BigInt = 1;
-        var summe:Q = new Q(0, 1);
-        var term:Float = 2.5; // just a random value > 10E-6
-        while (term > 10E-6 || mb < 10) {
-            var k_mamb:BigInt = Lib.comb(ma + mb, ma) * (ma + mb - 1);
-            var g_mbtb:Q = Lib.gjt(mb, tb);
-//ma:BigInt, mb:BigInt, ta:BigInt, tb:BigInt, ra:BigInt, rb:BigInt, g_mata:Q, k_mamb:BigInt, g_mbtb:Q
-//            term = calcTerm2(ma, mb, ta, tb, ra, rb, g_mata, k_mamb, g_mbtb);
-            term = calcTerm2(2, 2, 2, 2, 2, 2, new Q(1, 1), 2, new Q(1, 1));
-            var termQ:Q = Lib.floatToQ(term);
-            summe = summe.add(termQ);
-            mb++;
+            qa = qa.addBig(1);
         }
         return summe;
     }
 
-/*
-
-def calcTerm(ma, ta, tb, ra, rb, g_mata):
-    mb = 1
-    summe, term = 0.0, float("inf")
-    while term > sigma or mb < 10:
-        k_mamb = comb(ma + mb, ma) * (ma + mb - 1) #k(ma, mb)
-        g_mbtb = gjt(mb, tb)
-        term = calcTerm2(ma, mb, ta, tb, ra, rb, g_mata, k_mamb, g_mbtb)
-        summe += term
-        mb += 1
-    return summe
-
-
-/*
-              //                               9          1       14.3 2.814     5         1        0              6.4       90         0.821183806711 => 9.53804758478e-221
-    public static inline function calcTerm2(ma:BigInt, mb:BigInt, ta:Q, tb:Q, ra:BigInt, rb:BigInt, g_mata:BigInt, k_mamb:Q, g_mbtb:Q):Q {
+    public static inline function calcTerm(ma:Number, ta:Number, tb:Number, ra:Number, rb:Number, g_mata:Number):Number {
+        var mb:Number = new Number(1, 1);
+        var summe:Number = new Number(0, 1);
+        var term:Number = new Number(5, 2); // just a random value bigger then 10E-6
+        var sigma = new Number(1, 1000000);
+        while (term.isBigger(sigma) || mb.isSmallerBig(10)) {
+            var k_mamb:Number = Lib.comb(ma.add(mb), ma).mult((ma.add(mb).subBig(1)));
+            var g_mbtb:Number = Lib.gjt(mb, tb);
+            term = calcTerm2(ma, mb, ta, tb, ra, rb, g_mata, k_mamb, g_mbtb);
+            summe = summe.add(term);
+            mb = mb.addBig(1);
+        }
+        return summe;
     }
-/*
-    summe = 0.0
-    for qa in xrange(1, ma + 1):
-        s_qamara = s(qa, ma, ra)
-        for qb in xrange(1, mb + 1):
-            s_qbmbrb = s(qb, mb, rb)
-            k_qaqb = comb(qa + qb, qa) * (qa + qb - 1) # k(qa, qb)
-            summe += g_mata * s_qamara * g_mbtb * s_qbmbrb * k_qaqb / k_mamb
-# 15 3 0.2 0.2 8 7 -0.0319569753257 13872 -15.5954784729 2.35744549991
-#    print(ma, mb, ta, tb, ra, rb, g_mata, k_mamb, g_mbtb, summe)
-    return summe
-*/
+
+    public static inline function calc(ta:Number, tb:Number, ra:Number, rb:Number):Number {
+        var ma:Number = new Number(1, 1);
+        var summe:Number = new Number(0, 1);
+        var term:Number = new Number(5, 2); // just a random value bigger then 10E-6
+        var sigma = new Number(1, 1000000);
+        while (term.isBigger(sigma) || ma.isSmallerBig(10)) {
+            var g_mata = Lib.gjt(ma, ta);
+            term = calcTerm(ma, ta, tb, ra, rb, g_mata);
+            summe = summe.add(term);
+            ma = ma.addBig(1);
+        }
+        return summe;
+    }
+
+    public static inline function calcSimple(ta:Int, tb:Int, ra:Float, rb:Float):Number {
+        var taI:Number = new Number(ta, 1);
+        var tbI:Number = new Number(tb, 1);
+        var raI:Number = Number.fromFloat(ra);
+        var rbI:Number = Number.fromFloat(rb);
+        return calc(taI, tbI, raI, rbI);
+    }
+
     public static function main() {
-//        trace(s(3, 6, 10).toString());
-//        trace(s(4, 6, 10).toString());
-//  1 1 12 14 3 2 0.99998 2 0.9999975 => 0.99997750005
-        trace(calcTerm(1, 1, 12, 14, 3, new Q(2, 1)));
+        trace(calcSimple(1, 2, 5.0, 1.1));
     }
 
 }
