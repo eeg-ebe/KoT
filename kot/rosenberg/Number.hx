@@ -160,12 +160,12 @@ class Number {
     public inline function isBiggerEq(o:Number):Bool {
         var t:BigInt = n * o.m;
         var o:BigInt = o.n * m;
-        return t > o;
+        return t >= o;
     }
     public inline function isSmallerEq(o:Number):Bool {
         var t:BigInt = n * o.m;
         var o:BigInt = o.n * m;
-        return t < o;
+        return t <= o;
     }
 
     public static function fromFloat(f:Float):Number {
