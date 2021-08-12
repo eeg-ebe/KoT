@@ -88,7 +88,7 @@ class NeighborJoining {
             }
             // create combined inner sequence
             var l:List<String> = new List<String>();
-            l.add("Inner" + (innerNumber++));
+//            l.add("Inner" + (innerNumber++));
             var inner:Sequence = new Sequence(l, null);
             // calc diff of inner sequence
             var dist:Float = d.lookup(lowestSeq1, lowestSeq2);
