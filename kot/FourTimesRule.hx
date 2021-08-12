@@ -211,7 +211,8 @@ trace("=== " + sA + " " + sB + " ===");
             var k:Float = calcPairwiseDistanceOfSubClades(bestClades.first(), bestClades.last());
             var theta1:Float = calcTheta(bestClades.first(), c);
             var theta2:Float = calcTheta(bestClades.last(), c);
-            c.addInfo(floatToStringPrecision(theta1, 5) + "(" + bestClades.first().length + ") " + floatToStringPrecision(theta2, 5) + "(" + bestClades.last().length + ")");
+            c.addInfo("K=" + k);
+            c.addInfo("Theta1=" + floatToStringPrecision(theta1, 5) + ", Theta2=" + floatToStringPrecision(theta2, 5);
             var theta:Float = (theta1 > theta2) ? theta1 : theta2;
             if (theta != -1) {
                 var ratio:Float = k / theta;
