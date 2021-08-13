@@ -77,7 +77,7 @@ trace(seqsA + " " + seqsA);
         }
         var result:Float =0;
         if (diff != 0) { result = - (3.0 / 4) * Math.log (1 - 4 * diff / (3.0 * comparisons)); }
-        return result; 
+        return result;
     }
 
     public static inline function calcTheta(seqs:List<Sequence>, c:Clade):Float {
@@ -212,7 +212,7 @@ trace("=== " + sA + " " + sB + " ===");
             var theta1:Float = calcTheta(bestClades.first(), c);
             var theta2:Float = calcTheta(bestClades.last(), c);
             c.addInfo("K=" + k);
-            c.addInfo("Theta1=" + floatToStringPrecision(theta1, 5) + ", Theta2=" + floatToStringPrecision(theta2, 5);
+            c.addInfo("Theta1=" + floatToStringPrecision(theta1, 5) + ", Theta2=" + floatToStringPrecision(theta2, 5));
             var theta:Float = (theta1 > theta2) ? theta1 : theta2;
             if (theta != -1) {
                 var ratio:Float = k / theta;

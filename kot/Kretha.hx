@@ -24,11 +24,11 @@ import sys.io.File;
 import haxe.ds.Vector;
 
 /**
- * 
+ *
  *
  * @author Yann Spoeri
  */
-class Kot {
+class Kretha {
 
 //    Matrix.hx                   OK
 //    DistanceMatrix.hx           OK
@@ -41,8 +41,8 @@ class Kot {
 //    GraphNode.hx                OK
 
 //    MedianJoining.hx            OK
-//    Clade.hx                    
-//    MidPointRooter.hx           
+//    Clade.hx
+//    MidPointRooter.hx
 
     #if js
     static var workerScope:js.html.DedicatedWorkerGlobalScope;

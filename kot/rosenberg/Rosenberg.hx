@@ -20,6 +20,9 @@ package kot.rosenberg;
  */
 class Rosenberg {
 
+    private static var sigma = new Number(1, 1000000);
+    private static var null_:Number = new Number(0, 1);
+
     public static inline function s(l2:Number, l1:Number, j:Number):Number {
         var t1u:Number = Lib.comb(l1, l2).mult(Lib.comb(j, l2));
         var t1d:Number = Lib.comb(j.add(l1), j);
@@ -35,14 +38,18 @@ class Rosenberg {
         var qa:Number = new Number(1, 1);
         while (qa.isSmallerEq(ma)) {
             var s_qamara:Number = s(qa, ma, ra);
+            trace("=== " + s_qamara.toString() + "");
             var qb:Number = new Number(1, 1);
             while (qb.isSmallerEq(mb)) {
-                 var s_qbmbrb:Number = s(qb, mb, rb);
-                 var k_qaqb:Number = Lib.comb(qa.add(qb), qa).mult((qa.add(qb).subBig(1)));
-                 //           g_mata *    s_qamara *     g_mbtb *     s_qbmbrb *     k_qaqb /       k_mamb
-                 var mult:Number = g_mata.mult(s_qamara).mult(g_mbtb).mult(s_qbmbrb).mult(k_qaqb).div(k_mamb);
-                 summe = summe.add(mult);
-                 qb = qb.addBig(1);
+                var s_qbmbrb:Number = s(qb, mb, rb);
+                var k_qaqb:Number = Lib.comb(qa.add(qb), qa).mult((qa.add(qb).subBig(1)));
+                //           g_mata *    s_qamara *     g_mbtb *     s_qbmbrb *     k_qaqb /       k_mamb
+                var mult:Number = g_mata.mult(s_qamara).mult(g_mbtb).mult(s_qbmbrb).mult(k_qaqb).div(k_mamb);
+                if (mult.isSmallerEq(null_)) {
+                    break;
+                }
+                summe = summe.add(mult);
+                qb = qb.addBig(1);
             }
             qa = qa.addBig(1);
         }
@@ -53,11 +60,13 @@ class Rosenberg {
         var mb:Number = new Number(1, 1);
         var summe:Number = new Number(0, 1);
         var term:Number = new Number(5, 2); // just a random value bigger then 10E-6
-        var sigma = new Number(1, 1000000);
         while (term.isBigger(sigma) || mb.isSmallerBig(10)) {
             var k_mamb:Number = Lib.comb(ma.add(mb), ma).mult((ma.add(mb).subBig(1)));
             var g_mbtb:Number = Lib.gjt(mb, tb);
             term = calcTerm2(ma, mb, ta, tb, ra, rb, g_mata, k_mamb, g_mbtb);
+            if (term.isSmallerEq(null_)) {
+                break;
+            }
             summe = summe.add(term);
             mb = mb.addBig(1);
         }
@@ -68,10 +77,12 @@ class Rosenberg {
         var ma:Number = new Number(1, 1);
         var summe:Number = new Number(0, 1);
         var term:Number = new Number(5, 2); // just a random value bigger then 10E-6
-        var sigma = new Number(1, 1000000);
         while (term.isBigger(sigma) || ma.isSmallerBig(10)) {
             var g_mata = Lib.gjt(ma, ta);
             term = calcTerm(ma, ta, tb, ra, rb, g_mata);
+            if (term.isSmallerEq(null_)) {
+                break;
+            }
             summe = summe.add(term);
             ma = ma.addBig(1);
         }
@@ -87,7 +98,15 @@ class Rosenberg {
     }
 
     public static function main() {
-        trace(calcSimple(1, 2, 5.0, 1.1));
+        trace("Hello");
+        //1 1 1 2 5 1 0.128350997378 2 0.606344920236
+        var one:Number = new Number(1, 1);
+        var two:Number = new Number(2, 1);
+        var fiv:Number = new Number(5, 1);
+        var p12:Number = new Number(12835099, 100000000);
+        var p60:Number = new Number(60634492, 100000000);
+        trace(calcTerm2(one, one, one, two, fiv, one, p12, two, p60).toString());
+        trace(calcSimple(1, 2, 5, 1).toString()); // #0.0778249752672 calcSimple(5.0, 1.1, 1, 2));
     }
 
 }

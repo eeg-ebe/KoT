@@ -2094,7 +2094,8 @@ kot_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 			pi1 = pairwiseDistance1;
 		}
 		var theta2 = pi1 / (1 - 4 * pi1 / 3);
-		var info = kot_FourTimesRule.floatToStringPrecision(theta1,5) + "(" + bestClades.first().length + ") " + kot_FourTimesRule.floatToStringPrecision(theta2,5) + "(" + bestClades.last().length + ")";
+		c.mInfo.add("K=" + k);
+		var info = "Theta1=" + kot_FourTimesRule.floatToStringPrecision(theta1,5) + ", Theta2=" + kot_FourTimesRule.floatToStringPrecision(theta2,5);
 		c.mInfo.add(info);
 		var theta = theta1 > theta2 ? theta1 : theta2;
 		if(theta != -1) {
@@ -3542,7 +3543,6 @@ kot_NeighborJoining.runOnMatrix = function(d) {
 			}
 		}
 		var l = new List();
-		l.add("Inner" + innerNumber++);
 		var inner = new kot_Sequence(l,null);
 		var ret5 = 0;
 		if(lowestSeq1 != lowestSeq2) {
