@@ -86,7 +86,7 @@ class MidPointRooter {
         var midPoint:{ n1:Sequence, n2:Sequence, a:Float, b:Float } = findMidPoint(g);
         trace("midPoint: " + midPoint);
         var rootClade:Clade = new Clade();
-        rootClade.addInfo("Root");
+        //rootClade.addInfo("Root");
         genSubClade(g, midPoint.n1, midPoint.n2, rootClade, midPoint.a, 0);
         genSubClade(g, midPoint.n2, midPoint.n1, rootClade, midPoint.b, 0);
         return rootClade;
@@ -99,7 +99,9 @@ class MidPointRooter {
         if (seq != null) {
             clade.mConnectedInfo.set("sequence", process);
         }
-        clade.addInfo(process.getNodeName());
+        if (process.getNodeName() != "noName") {
+            clade.addInfo(process.getNodeName());
+        }
         clade.setParent(parentClade, dist);
         for (connection in g.getEdges(process)) {
             if (connection.v == commingFrom) {

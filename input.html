@@ -80,6 +80,7 @@ function calculate() {
     txt = txt.trim();
     if (txt != "") {
         worker.postMessage({"txt" : txt});
+        worker.postMessage({"txt" : txt, "decisionRatio" : ratio, "globalDeletion" : globalDel, "transivity" : transivity});
         return;
     }
 

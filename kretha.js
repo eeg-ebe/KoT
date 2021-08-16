@@ -2094,14 +2094,15 @@ kot_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 			pi1 = pairwiseDistance1;
 		}
 		var theta2 = pi1 / (1 - 4 * pi1 / 3);
-		c.mInfo.add("K=" + k);
-		var info = "Theta1=" + kot_FourTimesRule.floatToStringPrecision(theta1,5) + ", Theta2=" + kot_FourTimesRule.floatToStringPrecision(theta2,5);
+		var info = "K=" + kot_FourTimesRule.floatToStringPrecision(k,5);
 		c.mInfo.add(info);
+		var info1 = "Theta1=" + kot_FourTimesRule.floatToStringPrecision(theta1,5) + ", Theta2=" + kot_FourTimesRule.floatToStringPrecision(theta2,5);
+		c.mInfo.add(info1);
 		var theta = theta1 > theta2 ? theta1 : theta2;
 		if(theta != -1) {
 			var ratio = k / theta;
-			var info1 = kot_FourTimesRule.floatToStringPrecision(k,5) + "/" + kot_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kot_FourTimesRule.floatToStringPrecision(ratio,5);
-			c.mInfo.add(info1);
+			var info2 = kot_FourTimesRule.floatToStringPrecision(k,5) + "/" + kot_FourTimesRule.floatToStringPrecision(theta,5) + "=" + kot_FourTimesRule.floatToStringPrecision(ratio,5);
+			c.mInfo.add(info2);
 			if(ratio >= decisionRatio) {
 				var _g_head8 = sA.h;
 				while(_g_head8 != null) {
@@ -2418,13 +2419,13 @@ kot_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 			pi3 = pairwiseDistance3;
 		}
 		var theta21 = pi3 / (1 - 4 * pi3 / 3);
-		var info2 = kot_FourTimesRule.floatToStringPrecision(theta11,5) + "(" + bestClades1.first().length + ") " + kot_FourTimesRule.floatToStringPrecision(theta21,5) + "(" + bestClades1.last().length + ")";
-		c.mInfo.add(info2);
+		var info3 = kot_FourTimesRule.floatToStringPrecision(theta11,5) + "(" + bestClades1.first().length + ") " + kot_FourTimesRule.floatToStringPrecision(theta21,5) + "(" + bestClades1.last().length + ")";
+		c.mInfo.add(info3);
 		var theta3 = theta11 > theta21 ? theta11 : theta21;
 		if(theta3 != -1) {
 			var ratio1 = k1 / theta3;
-			var info3 = kot_FourTimesRule.floatToStringPrecision(k1,5) + "/" + kot_FourTimesRule.floatToStringPrecision(theta3,5) + "=" + kot_FourTimesRule.floatToStringPrecision(ratio1,5);
-			c.mInfo.add(info3);
+			var info4 = kot_FourTimesRule.floatToStringPrecision(k1,5) + "/" + kot_FourTimesRule.floatToStringPrecision(theta3,5) + "=" + kot_FourTimesRule.floatToStringPrecision(ratio1,5);
+			c.mInfo.add(info4);
 			if(ratio1 < decisionRatio) {
 				goOn = true;
 			}
@@ -2760,13 +2761,13 @@ kot_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 					}
 					var theta22 = pi5 / (1 - 4 * pi5 / 3);
 					c.mInfo.add(Std.string(s1) + " " + Std.string(s2));
-					var info4 = kot_FourTimesRule.floatToStringPrecision(theta12,5) + "(" + s1.length + ") " + kot_FourTimesRule.floatToStringPrecision(theta22,5) + "(" + s2.length + ")";
-					c.mInfo.add(info4);
+					var info5 = kot_FourTimesRule.floatToStringPrecision(theta12,5) + "(" + s1.length + ") " + kot_FourTimesRule.floatToStringPrecision(theta22,5) + "(" + s2.length + ")";
+					c.mInfo.add(info5);
 					var theta4 = theta12 > theta22 ? theta12 : theta22;
 					if(theta4 != -1) {
 						var ratio2 = k2 / theta4;
-						var info5 = kot_FourTimesRule.floatToStringPrecision(k2,5) + "/" + kot_FourTimesRule.floatToStringPrecision(theta4,5) + "=" + kot_FourTimesRule.floatToStringPrecision(ratio2,5);
-						c.mInfo.add(info5);
+						var info6 = kot_FourTimesRule.floatToStringPrecision(k2,5) + "/" + kot_FourTimesRule.floatToStringPrecision(theta4,5) + "=" + kot_FourTimesRule.floatToStringPrecision(ratio2,5);
+						c.mInfo.add(info6);
 						if(ratio2 < decisionRatio) {
 							goOn = true;
 							var combined = new List();
@@ -2861,7 +2862,6 @@ kot_FourTimesRule.speciesInClade = function(c,decisionRatio,transitivity) {
 			l.add(n22);
 		}
 	}
-	c.mInfo.add("" + Std.string(l));
 	console.log("output: " + Std.string(l) + " " + l.length);
 	return l;
 };
@@ -3222,7 +3222,6 @@ kot_MidPointRooter.root = function(g) {
 	var midPoint = kot_MidPointRooter.findMidPoint(g);
 	console.log("midPoint: " + Std.string(midPoint));
 	var rootClade = new kot_Clade();
-	rootClade.mInfo.add("Root");
 	kot_MidPointRooter.genSubClade(g,midPoint.n1,midPoint.n2,rootClade,midPoint.a,0);
 	kot_MidPointRooter.genSubClade(g,midPoint.n2,midPoint.n1,rootClade,midPoint.b,0);
 	return rootClade;
@@ -3253,7 +3252,17 @@ kot_MidPointRooter.genSubClade = function(g,process,commingFrom,parentClade,dist
 	} else {
 		result = process.mNames.join(",");
 	}
-	clade.mInfo.add(result);
+	if(result != "noName") {
+		var result1 = null;
+		if(process.mNames == null || process.mNames.length == 0) {
+			result1 = "noName";
+		} else if(process.mNames.length == 1) {
+			result1 = process.mNames.first();
+		} else {
+			result1 = process.mNames.join(",");
+		}
+		clade.mInfo.add(result1);
+	}
 	clade.mParent = parentClade;
 	if(dist != null) {
 		clade.mDist = dist;
