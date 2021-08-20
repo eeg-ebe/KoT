@@ -23,23 +23,29 @@
                 <div class="faq">
                     <a name="q1"></a>
                     <div class="question">Q1: What is KoT?</div>
-                    <div class="answer">KoT (tentative name, which may still change) is a webserver implementation of the K/theta approach to delimit species. For more information regarding the K/theta approach, please refer to the original publications <a href="https://doi.org/10.1371/journal.pone.0010609">Birky CW, Adams J, Gemmel M, Perry J (2010) Using population genetic theory and DNA sequences for species detection and identification in asexual organisms. PLoS ONE 5:e10609</a>, <a href="https://doi.org/10.1371/journal.pone.0052544">Birky CW (2013) Species detection and identification in sexual organisms using population genetic theory and DNA sequences. PLoS ONE 8:e52544</a> and <a href="https://doi.org/10.1101/2020.04.27.062828">Birky CW, Maughan H (2020) Evolutionary genetic species detected in prokaryotes by applying the k/θ ratio to DNA sequences. bioRxiv</a></div>
+                    <div class="answer">KoT (short for "K over Theta", and at the same time a pun on the <a href="https://en.wikipedia.org/wiki/Kot_(lodging)">Belgian word for a student accommodation</a>) is a webserver implementation of the K/θ approach to delimit species. For more information regarding the K/θ approach, please refer to the original publications <a href="https://doi.org/10.1371/journal.pone.0010609">Birky CW, Adams J, Gemmel M, Perry J (2010) Using population genetic theory and DNA sequences for species detection and identification in asexual organisms. PLoS ONE 5:e10609</a>, <a href="https://doi.org/10.1371/journal.pone.0052544">Birky CW (2013) Species detection and identification in sexual organisms using population genetic theory and DNA sequences. PLoS ONE 8:e52544</a> and <a href="https://doi.org/10.1101/2020.04.27.062828">Birky CW, Maughan H (2020) Evolutionary genetic species detected in prokaryotes by applying the K/θ ratio to DNA sequences. bioRxiv</a>. A summary of the K/θ approach (including the derivation of the main equations behind it) can also be found in the preprint describing KoT: <a href="https://doi.org/10.1101/2021.08.17.454531"> Spöri Y, Stoch F, Dellicour S, Birky CW, Flot J-F (2021) KoT: an automatic implementation of the K/θ method for species delimitation. bioRxiv</a>. 
+</div>
                 </div>
                 <div class="faq">
                     <a name="q2"></a>
                     <div class="question">Q2: What data do I need?</div>
-                    <div class="answer">Answer ...</div>
+                    <div class="answer">You should input a FASTA file of aligned sequences. Typically people use K/θ with haploid markers (mitochondrial for animals or chloroplastic for plants) but you can also try the method on phased sequences of diploid markers as well. If the "Complete Deletion" box it ticked, KoT will mask all columns containing indels or missing data, otherwise it will use a "Pairwise Deletion" approach (but in any case, better avoid missing data if possible).</div>
                 </div>
                 <div class="faq">
                     <a name="q3"></a>
-                    <div class="question">Q3: How to interprete the output?</div>
-                    <div class="answer">Answer ...</div>
+                    <div class="question">Q3: What are the available options?</div>
+                    <div class="answer">The main parameter when using the K/θ method is to choose the K/θ threshold that will be used to delineate species. Often in the literature people have been using a K/θ threshold value of 4 (i.e., sister clades that exhibit a K/θ ratio above 4 are considered as probable distinct species), as it corresponds to a p-value < 0.05, but one may choose a more stringent K/θ threshold such as 6, which corresponds to a p-value < 0.01.</div>
+                </div>
+                 <div class="faq">
+                    <a name="q4"></a>
+                    <div class="question">Q4: How to interprete the output?</div>
+                    <div class="answer">From the input FASTA file, KoT first produces a neighbor-joining tree of the sequences then moves from the tip of the tree till the root while calculating for each node the (Jukes-Cantor corrected) K distance separating the two corresponding sister clades, their respective θ values (Watterson's estimator of genetic diversity), and the K/θ ratio as K divided by the largest of the two θ values. These four values are displayed next to each node. If the calculated K/θ ratio is smaller than the user-specified threshold, KoT lumps the two clades into a single putative species and move to the next node towards the root. If, however, the calculated K/θ ratio is larger than the user-specified threshold, KoT considers the two clades as putative distinct species and will use only one of the two clades (the one with the shortest K distance) in further comparisons when moving towards the root. At the end of the process, colors are added to the tree to display the putative species delimited, and a partition file (sensu <a href="https://doi.org/10.1111/2041-210X.13454">Spöri Y, Flot J (2020) HaplowebMaker and CoMa: two web tools to delimit species using haplowebs and conspecificity matrices. Methods in Ecology and Evolution 11:1434–1438</a> is produced that users can copy/paste into other applications.</div>
                 </div>
             </div>
             <div class="navigation">
                 <a href="index.html">Back to startpage</a>
                 <a href="input.html">Run KoT</a>
-                <a href="mailto: yspori@ulb.ac.be,jflot@ulb.ac.be,birky@arizona.edu">E-Mail the author</a>
+                <a href="mailto: yspori@ulb.ac.be,jflot@ulb.ac.be,birky@arizona.edu">E-Mail the authors</a>
             </div>
         </div>
     </body>
