@@ -85,9 +85,13 @@ class Kretha {
         var i:Int = 1;
         for (subList in s) {
             for (e in subList) {
+                if (e.mOutputted) {
+                    continue;
+                }
                 for (name in e.getNames()) {
                     result.add(name + "\t" + i);
                 }
+                e.mOutputted = true;
             }
             ++i;
         }

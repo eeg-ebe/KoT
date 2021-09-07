@@ -3123,6 +3123,9 @@ kot_Kretha.formatSpeciesList = function(s) {
 			var val1 = _g_head1.item;
 			_g_head1 = _g_head1.next;
 			var e = val1;
+			if(e.mOutputted) {
+				continue;
+			}
 			var _g_head2 = e.mNames.h;
 			while(_g_head2 != null) {
 				var val2 = _g_head2.item;
@@ -3130,6 +3133,7 @@ kot_Kretha.formatSpeciesList = function(s) {
 				var name = val2;
 				result.add(name + "\t" + i);
 			}
+			e.mOutputted = true;
 		}
 		++i;
 	}
@@ -3842,6 +3846,7 @@ kot_NeighborJoining.runOnMatrix = function(d) {
 	return result;
 };
 var kot_Sequence = function(names,seq) {
+	this.mOutputted = false;
 	this.mNames = names;
 	this.mSeq = seq == null ? seq : seq.toUpperCase();
 	this.mHashCode = kot_Sequence.nextHashCode;

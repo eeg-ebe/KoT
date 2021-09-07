@@ -41,6 +41,11 @@ class Sequence {
     private var mHashCode:Int;
 
     /**
+     * For outputting
+     */
+    public var mOutputted:Bool = false;
+
+    /**
      * Create a new Sequence object.
      */
     public function new(names:List<String>, seq:String) {
