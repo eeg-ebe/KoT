@@ -42,7 +42,7 @@ class NeighborJoining {
         return runOnMatrix(d);
     }
 
-    public static function runOnMatrix(d:DistanceMatrix<Sequence>):Graph<Sequence,Float> {    
+    public static function runOnMatrix(d:DistanceMatrix<Sequence>):Graph<Sequence,Float> {
         var endPoints:Vector<Sequence> = d.getNames(); //seqs.copy();
         var result:Graph<Sequence,Float> = new Graph<Sequence,Float>(endPoints);
 

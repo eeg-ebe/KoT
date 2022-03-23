@@ -76,7 +76,7 @@ class Clade {
     /**
      * Set the parental clade of this clade.
      */
-    public inline function setParent(clade:Clade, dist:Float):Void {
+    public inline function setParent(clade:Clade, dist:Null<Float>):Void {
         mParent = clade;
         if (dist != null) {
             mDist = dist;

@@ -20,10 +20,10 @@ import haxe.ds.Vector;
 
 /**
  * Distance Matrix representation.
- * 
+ *
  * Do NOT use the methods getValue or setValue but the
  * methods set and lookup instead.
- * 
+ *
  * @author Yann Spoeri
  */
 class DistanceMatrix<E:{function hashCode():Int;}> extends Matrix {
@@ -67,11 +67,11 @@ class DistanceMatrix<E:{function hashCode():Int;}> extends Matrix {
     public inline function lookup(x1:E, x2:E):Float {
         var ret:Float = 0;
         if (x1 != x2) {
-            var pos1:Int = mNamePosLookup.get(x1);
+            var pos1:Null<Int> = mNamePosLookup.get(x1);
             if (pos1 == null) {
                 throw x1 + " not in map!";
             }
-            var pos2:Int = mNamePosLookup.get(x2);
+            var pos2:Null<Int> = mNamePosLookup.get(x2);
             if (pos2 == null) {
                 throw x2 + " not in map!";
             }
@@ -94,11 +94,11 @@ class DistanceMatrix<E:{function hashCode():Int;}> extends Matrix {
                 throw "Distance of identical objects must be 0!";
             }
         }
-        var pos1:Int = mNamePosLookup.get(x1);
+        var pos1:Null<Int> = mNamePosLookup.get(x1);
         if (pos1 == null) {
             throw x1 + " not in map!";
         }
-        var pos2:Int = mNamePosLookup.get(x2);
+        var pos2:Null<Int> = mNamePosLookup.get(x2);
         if (pos2 == null) {
             throw x2 + " not in map!";
         }

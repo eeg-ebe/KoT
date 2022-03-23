@@ -20,7 +20,7 @@ import haxe.ds.Vector;
 
 /**
  * A Reader specialized in reading distance matrices.
- * 
+ *
  * @author Yann Spoeri
  */
 class DistanceMatrixReader {
@@ -68,7 +68,6 @@ class DistanceMatrixReader {
                 d.set(s1, s2, val);
             }
         }
-        trace(d);
         return d;
     }
 
