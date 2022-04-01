@@ -103,6 +103,7 @@ class KoT {
     public static function main() {
         #if sys
         var cmdParser:CommandlineParser = new CommandlineParser("kot", "Perform k/thetha calculations");
+        cmdParser.addArgument("transivity", ["-t", "--transivity"], "bool", "false", false, "Whether to use transivity.");
         cmdParser.addArgument("noglobalDeletion", ["-n", "--noGlobalDeletion"], "bool", "false", false, "Whether to disable global deletion.");
         cmdParser.addArgument("decisionRatio", ["-k", "--decisionRatio"], "float", "4.0", false, "The decision treshhold.");
         cmdParser.addArgument("file", ["-f", "--file"], "string", null, true, "The path to the fasta file.");
@@ -110,6 +111,7 @@ class KoT {
 
         var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
         var decisionRatio:Float = cmd.getFloat("decisionRatio");
+        var transivity:Bool = cmd.getBool("transivity");
 
         var path:String = cmd.getString("file");
         var fileContent:String = File.getContent(path);
@@ -126,7 +128,7 @@ class KoT {
             FourTimesRule.distanceMatrix = d;
         }
         var c:Clade = MidPointRooter.root(g);
-        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, true);
+        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transivity);
         Sys.stdout().writeString("=== List of putative species ===\n");
         var id:Int = 0;
         for (lst in s) {
