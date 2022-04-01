@@ -69,7 +69,7 @@ function calculate() {
     var globalDel = document.getElementById('globalDel').checked;
     var transivity = document.getElementById('transivity').checked;
 
-    var worker = new Worker("kretha.js");
+    var worker = new Worker("kot.js");
     worker.addEventListener("message", function(e) {
         data = e.data;
         resultEle.innerHTML = data.h.svg;

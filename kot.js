@@ -3058,9 +3058,9 @@ kot_GraphNode.prototype = {
 	}
 	,__class__: kot_GraphNode
 };
-var kot_Kretha = function() { };
-kot_Kretha.__name__ = true;
-kot_Kretha.onMessage = function(e) {
+var kot_KoT = function() { };
+kot_KoT.__name__ = true;
+kot_KoT.onMessage = function(e) {
 	var result = new haxe_ds_StringMap();
 	try {
 		var fileContent = js_Boot.__cast(e.data.txt , String);
@@ -3080,7 +3080,7 @@ kot_Kretha.onMessage = function(e) {
 		}
 		var c = kot_MidPointRooter.root(g);
 		var s = kot_FourTimesRule.doRule(c,decisionRatio,transivity);
-		var resL = kot_Kretha.formatSpeciesList(s);
+		var resL = kot_KoT.formatSpeciesList(s);
 		kot_CladeColorer.colorClades(c,s);
 		var svg = c.getSVG();
 		if(__map_reserved["svg"] != null) {
@@ -3108,9 +3108,9 @@ kot_Kretha.onMessage = function(e) {
 			result.h["putativeSpecies"] = "";
 		}
 	}
-	kot_Kretha.workerScope.postMessage(result);
+	kot_KoT.workerScope.postMessage(result);
 };
-kot_Kretha.formatSpeciesList = function(s) {
+kot_KoT.formatSpeciesList = function(s) {
 	var result = new List();
 	var i = 1;
 	var _g_head = s.h;
@@ -3139,9 +3139,9 @@ kot_Kretha.formatSpeciesList = function(s) {
 	}
 	return result.join("\n");
 };
-kot_Kretha.main = function() {
-	kot_Kretha.workerScope = self;
-	kot_Kretha.workerScope.onmessage = kot_Kretha.onMessage;
+kot_KoT.main = function() {
+	kot_KoT.workerScope = self;
+	kot_KoT.workerScope.onmessage = kot_KoT.onMessage;
 };
 var kot_MidPointRooter = function() { };
 kot_MidPointRooter.__name__ = true;
@@ -3969,5 +3969,5 @@ var __map_reserved = {};
 js_Boot.__toStr = ({ }).toString;
 kot_CladeColorer.colors = ["#FF0000","#00FF00","#0000FF","#CC0000","#00CC00","#0000CC","#CC6600","#99CC00","#006699","#CC9900","#00CC99","#CC00CC","#CC6699","#009933","#0033CC","#6600FF","#3333FF"];
 kot_Sequence.nextHashCode = 0;
-kot_Kretha.main();
+kot_KoT.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

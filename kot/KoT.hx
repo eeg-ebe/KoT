@@ -30,7 +30,7 @@ import haxe.ds.Vector;
  *
  * @author Yann Spoeri
  */
-class Kretha {
+class KoT {
 
 //    Matrix.hx                   OK
 //    DistanceMatrix.hx           OK
