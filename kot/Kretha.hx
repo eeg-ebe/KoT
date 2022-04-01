@@ -20,6 +20,8 @@ import haxe.ds.StringMap;
 #end
 #if sys
 import sys.io.File;
+import haxelib.cmd.CommandlineParser;
+import haxelib.cmd.CommandlineParserResult;
 #end
 import haxe.ds.Vector;
 
@@ -100,10 +102,16 @@ class Kretha {
 
     public static function main() {
         #if sys
-        var globalDeletion:Bool = true;
-        var decisionRatio:Float = 4.0;
+        var cmdParser:CommandlineParser = new CommandlineParser("kot", "Perform k/thetha calculations");
+        cmdParser.addArgument("noglobalDeletion", ["-n", "--noGlobalDeletion"], "bool", "false", false, "Whether to disable global deletion.");
+        cmdParser.addArgument("decisionRatio", ["-k", "--decisionRatio"], "float", "4.0", false, "The decision treshhold.");
+        cmdParser.addArgument("file", ["-f", "--file"], "string", null, true, "The path to the fasta file.");
+        var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
 
-        var path:String = Sys.args()[0];
+        var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
+        var decisionRatio:Float = cmd.getFloat("decisionRatio");
+
+        var path:String = cmd.getString("file");
         var fileContent:String = File.getContent(path);
 
         var g:Graph<Sequence,Float> = null;
