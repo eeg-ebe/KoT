@@ -93,7 +93,7 @@ function calculate() {
     }
     var reader = new FileReader();
     reader.onload = function(data) {
-        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio, "globalDeletion" : globalDel, "transivity" : transivity});
+        worker.postMessage({"txt" : data.target.result, "decisionRatio" : ratio, "globalDeletion" : globalDel, "transitivity" : transitivity});
     };
     reader.readAsText(files[0]);
 }
