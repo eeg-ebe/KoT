@@ -30,7 +30,7 @@
             <br>
             <input id="decisionRatio" type="text" placeholder="Decision Ratio" value="4" />
             <input id="globalDel" type="checkbox" autocomplete="off"/>Global Deletion<br>
-            <input id="transivity" type="checkbox" autocomplete="off"/>Transivity<br>
+            <input id="transitivity" type="checkbox" autocomplete="off"/>Transitivity<br>
             <br><br>
             <span class="middle">
                 <button onclick="calculate()">Calculate</button>
@@ -67,7 +67,7 @@ function calculate() {
     var ratio = parseFloat(ratioTxt);
 
     var globalDel = document.getElementById('globalDel').checked;
-    var transivity = document.getElementById('transivity').checked;
+    var transitivity = document.getElementById('transitivity').checked;
 
     var worker = new Worker("kot.js");
     worker.addEventListener("message", function(e) {
@@ -81,7 +81,7 @@ function calculate() {
     txt = txt.trim();
     if (txt != "") {
         worker.postMessage({"txt" : txt});
-        worker.postMessage({"txt" : txt, "decisionRatio" : ratio, "globalDeletion" : globalDel, "transivity" : transivity});
+        worker.postMessage({"txt" : txt, "decisionRatio" : ratio, "globalDeletion" : globalDel, "transitivity" : transitivity});
         return;
     }
 

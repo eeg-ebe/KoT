@@ -46,6 +46,10 @@ class KoT {
 //    Clade.hx
 //    MidPointRooter.hx
 
+    public static function calcKot():Void {
+
+    }
+
     #if js
     static var workerScope:js.html.DedicatedWorkerGlobalScope;
     public static function onMessage(e:js.html.MessageEvent):Void {
@@ -54,7 +58,7 @@ class KoT {
             var fileContent:String = cast(e.data.txt, String);
             var decisionRatio:Float = cast(e.data.decisionRatio, Float);
             var globalDeletion:Bool = cast(e.data.globalDeletion, Bool);
-            var transivity:Bool = cast(e.data.transivity, Bool);
+            var transitivity:Bool = cast(e.data.transitivity, Bool);
             var g:Graph<Sequence,Float> = null;
             if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
                 var reader:FastaAlignmentReader = new FastaAlignmentReader();
@@ -67,7 +71,7 @@ class KoT {
                 FourTimesRule.distanceMatrix = d;
             }
             var c:Clade = MidPointRooter.root(g);
-            var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transivity);
+            var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
             var resL:String = formatSpeciesList(s);
             CladeColorer.colorClades(c, s);
             var svg:String = c.getSVG();
@@ -103,15 +107,17 @@ class KoT {
     public static function main() {
         #if sys
         var cmdParser:CommandlineParser = new CommandlineParser("kot", "Perform k/thetha calculations");
-        cmdParser.addArgument("transivity", ["-t", "--transivity"], "bool", "false", false, "Whether to use transivity.");
+        cmdParser.addArgument("transitivity", ["-t", "--transitivity"], "bool", "false", false, "Whether to use transitivity.");
         cmdParser.addArgument("noglobalDeletion", ["-n", "--noGlobalDeletion"], "bool", "false", false, "Whether to disable global deletion.");
         cmdParser.addArgument("decisionRatio", ["-k", "--decisionRatio"], "float", "4.0", false, "The decision treshhold.");
         cmdParser.addArgument("file", ["-f", "--file"], "string", null, true, "The path to the fasta file.");
+        cmdParser.addArgument("out", ["-o", "--out"], "string", null, true, "The output path to write the delimitation result to.");
+        cmdParser.addArgument("svgOut", ["-s", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
         var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
 
         var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
         var decisionRatio:Float = cmd.getFloat("decisionRatio");
-        var transivity:Bool = cmd.getBool("transivity");
+        var transitivity:Bool = cmd.getBool("transitivity");
 
         var path:String = cmd.getString("file");
         var fileContent:String = File.getContent(path);
@@ -128,15 +134,20 @@ class KoT {
             FourTimesRule.distanceMatrix = d;
         }
         var c:Clade = MidPointRooter.root(g);
-        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transivity);
-        Sys.stdout().writeString("=== List of putative species ===\n");
-        var id:Int = 0;
-        for (lst in s) {
-            id++;
-            for (ind in lst) {
-                Sys.stdout().writeString(ind + "\t" + id + "\n");
-            }
+        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
+
+        var c:Clade = MidPointRooter.root(g);
+        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
+        var resL:String = formatSpeciesList(s);
+        File.saveContent(cmd.getString("out"), resL);
+
+        var svgFilePath:String = cmd.getString("svgOut");
+        if (svgFilePath != null) {
+            CladeColorer.colorClades(c, s);
+            var svg:String = c.getSVG();
+            File.saveContent(svgFilePath, svg);
         }
+
         #elseif js
         workerScope = untyped self;
         workerScope.onmessage = onMessage;
