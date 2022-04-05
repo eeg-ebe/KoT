@@ -167,6 +167,9 @@ class Clade {
         result.push("</svg>");
         return result.join("");
     }
+    private inline function escapeXMLSpecialChars(s:String) {
+        return StringTools.htmlEscape(s, true);
+    }
     private function paint(result:Array<String>, x:Float, y:Float, color:String):{ x:Float, y:Float, finalY:Float } {
         var resX:Float = 0, resY:Float = 0, finalY:Float = 0;
         result.push("<g id='" + mInfo.first() + "' style='stroke:" + mColor + "'>");
@@ -182,7 +185,7 @@ class Clade {
             mx = x + mDist * mDistStretch + mLineTextDist;
             my = y + mCladeDist + mTextSize / 2 + 2.5;
             for (info in mInfo) {
-                result.push("<text x='" + mx + "' y='" + my + "'>" + info + "</text>");
+                result.push("<text x='" + mx + "' y='" + my + "'>" + escapeXMLSpecialChars(info) + "</text>");
                 my += mTextSize + mTextDist;
             }
         } else {
@@ -209,7 +212,7 @@ class Clade {
             mx = mx + mLineTextDist;
             my = txtY + mCladeDist + mTextSize / 2 + 2.5;
             for (info in mInfo) {
-                result.push("<text x='" + mx + "' y='" + my + "'>" + info + "</text>");
+                result.push("<text x='" + mx + "' y='" + my + "'>" + escapeXMLSpecialChars(info) + "</text>");
                 my += mTextSize + mTextDist;
             }
         }
