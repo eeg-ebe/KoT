@@ -63,6 +63,11 @@ class KoT {
             if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
                 var reader:FastaAlignmentReader = new FastaAlignmentReader();
                 var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
+				if (seqs.length <= 1) {
+					result.set("svg", "");
+					result.set("putativeSpecies", "All sequences are the same!");
+					return;
+				}
                 g = NeighborJoining.run(seqs);
             } else {
                 var reader:DistanceMatrixReader = new DistanceMatrixReader();
@@ -126,6 +131,10 @@ class KoT {
         if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
             var reader:FastaAlignmentReader = new FastaAlignmentReader();
             var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
+			if (seqs.length <= 1) {
+				Sys.stderr().writeString("All sequences are the same!");
+				return;
+			}
             g = NeighborJoining.run(seqs);
         } else {
             var reader:DistanceMatrixReader = new DistanceMatrixReader();
