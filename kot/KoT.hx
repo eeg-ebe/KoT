@@ -22,6 +22,8 @@ import haxe.ds.StringMap;
 import sys.io.File;
 import haxelib.cmd.CommandlineParser;
 import haxelib.cmd.CommandlineParserResult;
+import haxelib.bio.evolution.Newick;
+import haxelib.bio.evolution.IClade as NewickClade;
 #end
 import haxe.ds.Vector;
 
@@ -63,11 +65,11 @@ class KoT {
             if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
                 var reader:FastaAlignmentReader = new FastaAlignmentReader();
                 var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
-				if (seqs.length <= 1) {
-					result.set("svg", "");
-					result.set("putativeSpecies", "All sequences are the same!");
-					return;
-				}
+                if (seqs.length <= 1) {
+                    result.set("svg", "");
+                    result.set("putativeSpecies", "All sequences are the same!");
+                    return;
+                }
                 g = NeighborJoining.run(seqs);
             } else {
                 var reader:DistanceMatrixReader = new DistanceMatrixReader();
@@ -118,6 +120,7 @@ class KoT {
         cmdParser.addArgument("file", ["-f", "--file"], "string", null, true, "The path to the fasta file.");
         cmdParser.addArgument("out", ["-o", "--out"], "string", null, true, "The output path to write the delimitation result to.");
         cmdParser.addArgument("svgOut", ["-s", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
+        cmdParser.addArgument("newick", ["-w", "--newick"], "string", null, false, "Path to a file containint the tree (in Newick format) to use.");
         var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
 
         var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
@@ -128,13 +131,26 @@ class KoT {
         var fileContent:String = File.getContent(path);
 
         var g:Graph<Sequence,Float> = null;
-        if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
+        var newickFilePath:String = cmd.getString("newick");
+        if (newickFilePath != null) {
+            var newickAsStr:String = File.getContent(newickFilePath);
+            var clade:NewickClade = Newick.parse(newickAsStr);
             var reader:FastaAlignmentReader = new FastaAlignmentReader();
             var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
-			if (seqs.length <= 1) {
-				Sys.stderr().writeString("All sequences are the same!");
-				return;
-			}
+            if (seqs.length <= 1) {
+                Sys.stderr().writeString("All sequences are the same!");
+                return;
+            }
+            var endPoints:Vector<Sequence> = seqs.copy();
+            g = new Graph<Sequence,Float>(endPoints);
+            recursiveCopy(seqs, g, clade);
+        } else if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
+            var reader:FastaAlignmentReader = new FastaAlignmentReader();
+            var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
+            if (seqs.length <= 1) {
+                Sys.stderr().writeString("All sequences are the same!");
+                return;
+            }
             g = NeighborJoining.run(seqs);
         } else {
             var reader:DistanceMatrixReader = new DistanceMatrixReader();
@@ -159,6 +175,38 @@ class KoT {
         workerScope.onmessage = onMessage;
         #end
     }
+
+    #if sys
+    public static function recursiveCopy(seqs:Vector<Sequence>, g:Graph<Sequence,Float>, clade:NewickClade):Sequence {
+        var name:String = clade.getName();
+        var childs = clade.getChilds();
+        if (childs != null && !childs.isEmpty()) {
+            var l:List<String> = new List<String>();
+            var inner:Sequence = new Sequence(l, null);
+            g.addNode(inner);
+            for (child in childs) {
+                var outer:Sequence = recursiveCopy(seqs, g, child);
+                g.addEdge(outer, inner, child.getDistance());
+            }
+            return inner;
+        } else {
+            var nameToFind:String = clade.getName();
+            if (nameToFind == null || nameToFind == "") {
+                throw "Empty name for leaf clade in newick";
+            }
+            for (seq in seqs) {
+                var seqNames = seq.getNames();
+                for (name in seqNames) {
+                    if (name == nameToFind) {
+                        return seq;
+                    }
+                }
+            }
+            throw "No sequence(s) for " + name + " found!";
+        }
+        return null;
+    }
+    #end
 
 /*    public static function main() {
 //        var c:Clade = new Clade();
