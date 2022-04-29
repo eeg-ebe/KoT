@@ -158,6 +158,7 @@ class KoT {
             g = NeighborJoining.runOnMatrix(d);
             FourTimesRule.distanceMatrix = d;
         }
+        //Sys.stderr().writeString("" + g.getGraphDotRepresentation());
         var c:Clade = MidPointRooter.root(g);
         var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
         var resL:String = formatSpeciesList(s);
@@ -177,16 +178,21 @@ class KoT {
     }
 
     #if sys
-    public static function recursiveCopy(seqs:Vector<Sequence>, g:Graph<Sequence,Float>, clade:NewickClade):Sequence {
+    public static function recursiveCopy(seqs:Vector<Sequence>, g:Graph<Sequence,Float>, clade:NewickClade, ?i:Int=0):Sequence {
         var name:String = clade.getName();
         var childs = clade.getChilds();
         if (childs != null && !childs.isEmpty()) {
             var l:List<String> = new List<String>();
+            //l.add("Inner" + (i));
             var inner:Sequence = new Sequence(l, null);
             g.addNode(inner);
             for (child in childs) {
-                var outer:Sequence = recursiveCopy(seqs, g, child);
-                g.addEdge(outer, inner, child.getDistance());
+                var outer:Sequence = recursiveCopy(seqs, g, child, i+1);
+                var dist:Float = child.getDistance();
+                if (dist == null) {
+                    throw "No distance given for clade";
+                }
+                g.addEdge(outer, inner, dist);
             }
             return inner;
         } else {
