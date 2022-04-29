@@ -185,12 +185,20 @@ class KoT {
         var name:String = clade.getName();
         var childs = clade.getChilds();
         if (childs != null && !childs.isEmpty()) {
-            var l:List<String> = new List<String>();
-            //l.add("Inner" + (i));
-            var inner:Sequence = new Sequence(l, null);
-            g.addNode(inner);
+            var first:Bool = true;
+            var inner:Sequence = null;
             for (child in childs) {
                 var outer:Sequence = recursiveCopy(seqs, g, child, i+1);
+                if (outer == null) {
+                    return null;
+                }
+                if (first) {
+                    var l:List<String> = new List<String>();
+                    //l.add("Inner" + (i));
+                    inner = new Sequence(l, null);
+                    g.addNode(inner);
+                    first = false;
+                }
                 var dist:Float = child.getDistance();
                 if (dist == null) {
                     throw "No distance given for clade";
@@ -207,7 +215,11 @@ class KoT {
                 var seqNames = seq.getNames();
                 for (name in seqNames) {
                     if (name == nameToFind) {
-                        return seq;
+                        var edges:List<{v:Sequence, e:Float}> = g.getEdges(seq);
+                        if (edges == null || edges.isEmpty()) {
+                            return seq;
+                        }
+                        return null;
                     }
                 }
             }
