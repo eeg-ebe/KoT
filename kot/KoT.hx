@@ -144,9 +144,6 @@ class KoT {
         }
         var c:Clade = MidPointRooter.root(g);
         var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
-
-        var c:Clade = MidPointRooter.root(g);
-        var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
         var resL:String = formatSpeciesList(s);
         File.saveContent(cmd.getString("out"), resL);
 
