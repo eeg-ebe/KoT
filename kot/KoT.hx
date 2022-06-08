@@ -121,10 +121,12 @@ class KoT {
         cmdParser.addArgument("out", ["-o", "--out"], "string", null, true, "The output path to write the delimitation result to.");
         cmdParser.addArgument("svgOut", ["-s", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
         cmdParser.addArgument("newick", ["-w", "--newick"], "string", null, false, "Path to a file containint the tree (in Newick format) to use.");
+        cmdParser.addArgument("threshold", ["-h", "--threshold"], "float", "0.8", false, "The threshold to combine clades.");
         var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
 
         var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
         var decisionRatio:Float = cmd.getFloat("decisionRatio");
+        var threshold:Float = cmd.getFloat("threshold");
         var transitivity:Bool = cmd.getBool("transitivity");
 
         var path:String = cmd.getString("file");
@@ -178,6 +180,10 @@ class KoT {
     }
 
     #if sys
+    public static function combineClades(c:Clade, t:Float):Clade {
+        
+    }
+    
     public static function recursiveCopy(seqs:Vector<Sequence>, g:Graph<Sequence,Float>, clade:NewickClade, ?i:Int=0):Sequence {
         var name:String = clade.getName();
         var childs = clade.getChilds();
