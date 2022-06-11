@@ -22,7 +22,6 @@ package kot;
 
 import haxe.ds.Vector;
 import haxelib.bio.parsers.FastaParser;
-import haxelib.bio.parsers.NewickClade;
 import haxelib.bio.parsers.NewickParser;
 import haxelib.bio.phylo.Clade;
 import haxelib.bio.phylo.KOverTheta;
@@ -186,7 +185,7 @@ class CLI
             l : sequenceLength
         };
     }
-
+/*
     public static function createGraph(distanceMatrix:StringMatrix, newickFile:String):StringGraph<String> {
         var result:StringGraph<String> = null;
         if (newickFile != null) {
@@ -244,10 +243,10 @@ class CLI
             return;
         }
         
-    }
+    }*/
     
     private static function createCladesByNewickFile(distanceMatrix:StringMatrix, newickFile:String):Clade {
-        var clade:NewickClade = null;
+        var clade:Clade = null;
         try {
             var newickFileContent:String = File.getContent(newickFile);
             var parser:NewickParser = new NewickParser();
@@ -285,9 +284,10 @@ class CLI
         if (!ok) {
             return null;
         }
-        return copyClade(clade);
+        return clade;
+//        return copyClade(clade);
     }
-    
+    /*
     private static function copyClade(c:NewickClade):Clade {
         var result:Clade = new Clade(c.name);
         if (c.extraInformation != null && c.extraInformation != "") {
@@ -308,7 +308,7 @@ class CLI
             }
         }
         return result;
-    }
+    }*/
 
     public static function main() {
         var cmdParser:CommandlineParser = new CommandlineParser("kot", "Program to perform k/thetha calculations.");
