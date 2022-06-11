@@ -325,6 +325,7 @@ class CLI
         cmdParser.addArgument("rule", ["-l", "--rule"], "int", null, true, "The rule to decide whether two sister clades are different species. Till now the rules of Rosenberg (0) and Birky (1) are implemented.");
         cmdParser.addArgument("decisionThreshold", ["-k", "--decisionThreshold"], "float", null, true, "The decision threshold to use.");
         //cmdParser.addArgument("combinationRule", ["-c", "--combinationRule"], "int", "0", false, "The combination rule to take. Till now (0) short, (1) transitivity, (2) majority and (3) all are implemented.");
+        cmdParser.addArgument("monophyleticOnly", ["-m", "--monophyleticOnly"], "bool", "false", false, "Delimit only monophyletic species.");
         cmdParser.addArgument("out", ["-o", "--out"], "string", null, true, "The output file to write the delimitation result to.");
         cmdParser.addArgument("svgOut", ["-v", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
         var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
@@ -356,6 +357,7 @@ class CLI
         var method:KOverTheta = new KOverTheta();
         method.setDecisionRule(cmd.getInt("rule"));
         method.setDecisionThreshold(cmd.getFloat("decisionThreshold"));
+        method.setDelimitedSpeciesMonophyletic(cmd.getBool("monophyleticOnly"));
         var result:List<StringSet> = method.runKOverTheta(clade, distanceMatrix, sequenceLength);
         System.messages.add(3, "KOverTheta", "Finished running K over Theta algorithm; Nr. of putative species: " + result.length);
         
