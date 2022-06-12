@@ -26,6 +26,7 @@ import haxelib.bio.parsers.NewickParser;
 import haxelib.bio.phylo.Clade;
 import haxelib.bio.phylo.KOverTheta;
 import haxelib.bio.phylo.NeighborJoining;
+import haxelib.bio.phylo.treerooter.OutgroopRerooter;
 import haxelib.bio.Sequence;
 import haxelib.bio.SequenceListAnalyzer;
 import haxelib.cmd.CommandlineParser;
@@ -321,6 +322,8 @@ class CLI
         cmdParser.addArgument("newickFile", ["-n", "--newick"], "string", null, true, "The path to the Newick file.");
         //cmdParser.addArgument("newickFile", ["-n", "--newick"], "string", null, false, "The path to the Newick file. If not given, NJ will be used to calculate a tree based on the distance matrix.");
         //cmdParser.addArgument("bootstrapThreshold", ["-t", "--bootstrapThreshold"], "float", "0.995", false, "The bootstrap threshold to use.");
+        //cmdParser.addArgument("midPointRooting", ["-p", "--midPointRooting"], "bool", "false", false, "Whether to use midpointrooting.");
+        cmdParser.addArgument("outgroopRooting", ["-u", "--outgroopRooting"], "string", null, false, "Outgroop rooting. If given, the parsed newick tree will be rerooted by using the given individual as outgroop.");
         //cmdParser.addArgument("outgroupRooting", ["-r", "--outgroup"], "string", null, false, "By default midpointrooting is used in order to convert the unrooted tree into a rooted one. However by using this argument you may specify an outgroup.");
         cmdParser.addArgument("rule", ["-l", "--rule"], "int", null, true, "The rule to decide whether two sister clades are different species. Till now the rules of Rosenberg (0) and Birky (1) are implemented.");
         cmdParser.addArgument("decisionThreshold", ["-k", "--decisionThreshold"], "float", null, true, "The decision threshold to use.");
@@ -352,6 +355,12 @@ class CLI
             Sys.exit(1);
         }*/
         var clade:Clade = createCladesByNewickFile(distanceMatrix, cmd.getString("newickFile"));
+        
+        var outgroop:String = cmd.getString("outgroopRooting");
+        if (outgroop != null && outgroop != "") {
+            var rerooter:OutgroopRerooter = new OutgroopRerooter(outgroop);
+            clade = rerooter.reroot(clade);
+        }
 
         System.messages.add(3, "KOverTheta", "Running K over Theta algorithm");
         var method:KOverTheta = new KOverTheta();
