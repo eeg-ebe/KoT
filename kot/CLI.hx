@@ -304,7 +304,7 @@ class CLI
             i++;
         }
         
-        File.saveContent(cmd.getString("out"), speciesList.join("\n"));
+        File.saveContent(cmd.getString("out"), speciesList.join("\n") + "\n");
         
         var svgFilePath:String = cmd.getString("svgOut");
         if (svgFilePath != null) {
