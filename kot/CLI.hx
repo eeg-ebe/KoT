@@ -272,6 +272,9 @@ class CLI
             Sys.exit(1);
         }*/
         var clade:Clade = createCladesByNewickFile(distanceMatrix, cmd.getString("newickFile"));
+        if (clade == null) {
+            Sys.exit(1);
+        }
 
         var bootstrapThreshold:Float = cmd.getFloat("bootstrapThreshold");
         if (0 <= bootstrapThreshold) {
