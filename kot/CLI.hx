@@ -245,7 +245,7 @@ class CLI
         cmdParser.addArgument("rule", ["-l", "--rule"], "int", null, true, "The rule to decide whether two sister clades are different species. Till now the rules of Rosenberg (0) and Birky (1) are implemented.");
         cmdParser.addArgument("decisionThreshold", ["-k", "--decisionThreshold"], "float", null, true, "The decision threshold to use.");
         cmdParser.addArgument("monophyleticOnly", ["-m", "--monophyleticOnly"], "bool", "false", false, "Delimit only monophyletic species.");
-        cmdParser.addArgument("out", ["-o", "--out"], "string", null, true, "The output file to write the delimitation result to.");
+        cmdParser.addArgument("out", ["-o", "--out"], "string", null, false, "The output file to write the delimitation result to.");
         cmdParser.addArgument("svgOut", ["-v", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
         var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
         
@@ -304,7 +304,13 @@ class CLI
             i++;
         }
         
-        File.saveContent(cmd.getString("out"), speciesList.join("\n") + "\n");
+        var outFile:String = cmd.getString("out");
+        var outFileContent:String = speciesList.join("\n") + "\n";
+        if (outFile == null) {
+            Sys.stdout().writeString(outFileContent);
+        } else {
+            File.saveContent(outFile, outFileContent);
+        }
         
         var svgFilePath:String = cmd.getString("svgOut");
         if (svgFilePath != null) {
