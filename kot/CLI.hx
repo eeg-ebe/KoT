@@ -24,6 +24,7 @@ import haxe.ds.Vector;
 import haxelib.bio.parsers.FastaParser;
 import haxelib.bio.parsers.NewickParser;
 import haxelib.bio.phylo.Clade;
+import haxelib.bio.phylo.CladeCombiner;
 import haxelib.bio.phylo.KOverTheta;
 import haxelib.bio.phylo.NeighborJoining;
 import haxelib.bio.phylo.treerooter.MidpointRerooter;
@@ -239,7 +240,7 @@ class CLI
         cmdParser.addArgument("distanceMatrixOutputFile", ["-x", "--distanceMatrixOut"], "string", null, false, "If given the calculated p-distance matrix will be written to this file.");
         
         cmdParser.addArgument("newickFile", ["-n", "--newick"], "string", null, true, "The path to the Newick file.");
-        //cmdParser.addArgument("bootstrapThreshold", ["-t", "--bootstrapThreshold"], "float", "0.995", false, "The bootstrap threshold to use.");
+        cmdParser.addArgument("bootstrapThreshold", ["-t", "--bootstrapThreshold"], "float", "-1", false, "The bootstrap threshold to use. The value should be between 0 and 1. Any other value will turn of this feature.");
         cmdParser.addArgument("midPointRooting", ["-p", "--midPointRooting"], "bool", "false", false, "Whether to use midpointrooting.");
         cmdParser.addArgument("outgroopRooting", ["-u", "--outgroopRooting"], "string", null, false, "Whether to use Outgroop rooting. If given, the parsed newick tree will be rerooted by using the given individual as outgroop.");
         cmdParser.addArgument("rule", ["-l", "--rule"], "int", null, true, "The rule to decide whether two sister clades are different species. Till now the rules of Rosenberg (0) and Birky (1) are implemented.");
@@ -271,6 +272,14 @@ class CLI
             Sys.exit(1);
         }*/
         var clade:Clade = createCladesByNewickFile(distanceMatrix, cmd.getString("newickFile"));
+
+        var bootstrapThreshold:Float = cmd.getFloat("bootstrapThreshold");
+        if (0 <= bootstrapThreshold && bootstrapThreshold <= 1) {
+            System.messages.add(3, "CladeCombinder", "Collapsing all clades which do not have a support of at least " + bootstrapThreshold);
+            var combiner = new CladeCombiner(bootstrapThreshold);
+            combiner.setBootstrapSupportNeeded(bootstrapThreshold);
+            clade = combiner.collapseClades(clade);
+        }
         
         System.messages.add(3, "Rerooting", "Running rerooting algorithm");
         var outgroop:String = cmd.getString("outgroopRooting");
