@@ -26,6 +26,7 @@ import haxelib.bio.parsers.NewickParser;
 import haxelib.bio.phylo.Clade;
 import haxelib.bio.phylo.KOverTheta;
 import haxelib.bio.phylo.NeighborJoining;
+import haxelib.bio.phylo.treerooter.MidpointRerooter;
 import haxelib.bio.phylo.treerooter.OutgroopRerooter;
 import haxelib.bio.Sequence;
 import haxelib.bio.SequenceListAnalyzer;
@@ -186,65 +187,6 @@ class CLI
             l : sequenceLength
         };
     }
-/*
-    public static function createGraph(distanceMatrix:StringMatrix, newickFile:String):StringGraph<String> {
-        var result:StringGraph<String> = null;
-        if (newickFile != null) {
-            var clade:NewickClade = null;
-            try {
-                var newickFileContent:String = File.getContent(newickFile);
-                var parser:NewickParser = new NewickParser();
-                clade = parser.read(newickFileContent);
-            } catch (e) {
-                System.messages.add(5, "NewickParser", "Error reading newick file");
-                System.messages.add(5, "NewickParser", "" + e);
-            }
-            var ok:Bool = true;
-            var leafNames:List<String> = clade.getLeafNames();
-            var seen:StringSet = new StringSet();
-            for (name in leafNames) {
-                if (name == null || name == "") {
-                    System.messages.add(5, "NewickChecker", "Newick with empty leaf name");
-                    ok = false;
-                }
-                if (seen.contains(name)) {
-                    System.messages.add(5, "NewickChecker", "Newick tree with duplicated leaf name " + name);
-                    ok = false;
-                }
-                seen.add(name);
-            }
-            var distMatrixNames:Vector<String> = distanceMatrix.getNames();
-            for (name in distMatrixNames) {
-                var contained:Bool = seen.remove(name);
-                if (!contained) {
-                    System.messages.add(5, "NewickChecker", name + " not present in newick but in distance matrix/fasta file!");
-                    ok = false;
-                }
-            }
-            for (name in seen) {
-                System.messages.add(5, "NewickChecker", name + " present in newick but not in distance matrix/fasta file!");
-                ok = false;
-            }
-            if (!ok) {
-                return null;
-            }
-            result = new StringGraph<String>();
-            for (name in leafNames) {
-                result.addNode(name);
-            }
-            copyGraph(null, clade, result);
-        } else {
-            //var graph:StringGraph<Float> = NeighborJoining.runOnMatrix(distanceMatrix);
-        }
-        return result;
-    }
-    private static function copyGraph(from:NewickClade, clade:NewickClade, result:StringGraph<String>):Void {
-        if (clade.subClades == null || clade.subClades.isEmpty()) {
-            
-            return;
-        }
-        
-    }*/
     
     private static function createCladesByNewickFile(distanceMatrix:StringMatrix, newickFile:String):Clade {
         var clade:Clade = null;
@@ -286,30 +228,7 @@ class CLI
             return null;
         }
         return clade;
-//        return copyClade(clade);
     }
-    /*
-    private static function copyClade(c:NewickClade):Clade {
-        var result:Clade = new Clade(c.name);
-        if (c.extraInformation != null && c.extraInformation != "") {
-            if (c.extraInformation.indexOf(":") == -1) {
-                var dist:Float = Std.parseFloat(c.extraInformation);
-                result.setDistance(dist);
-            } else {
-                var data = c.extraInformation.split(":");
-                var dist:Float = Std.parseFloat(data[0]);
-                var bootstrap:Float = Std.parseFloat(data[1]);
-                result.setDistance(dist);
-                result.setBootstrapValue(bootstrap);
-            }
-        }
-        if (c.subClades != null) {
-            for (child in c.subClades) {
-                result.addChild(copyClade(child));
-            }
-        }
-        return result;
-    }*/
 
     public static function main() {
         var cmdParser:CommandlineParser = new CommandlineParser("kot", "Program to perform k/thetha calculations.");
@@ -320,14 +239,11 @@ class CLI
         cmdParser.addArgument("distanceMatrixOutputFile", ["-x", "--distanceMatrixOut"], "string", null, false, "If given the calculated p-distance matrix will be written to this file.");
         
         cmdParser.addArgument("newickFile", ["-n", "--newick"], "string", null, true, "The path to the Newick file.");
-        //cmdParser.addArgument("newickFile", ["-n", "--newick"], "string", null, false, "The path to the Newick file. If not given, NJ will be used to calculate a tree based on the distance matrix.");
         //cmdParser.addArgument("bootstrapThreshold", ["-t", "--bootstrapThreshold"], "float", "0.995", false, "The bootstrap threshold to use.");
-        //cmdParser.addArgument("midPointRooting", ["-p", "--midPointRooting"], "bool", "false", false, "Whether to use midpointrooting.");
-        cmdParser.addArgument("outgroopRooting", ["-u", "--outgroopRooting"], "string", null, false, "Outgroop rooting. If given, the parsed newick tree will be rerooted by using the given individual as outgroop.");
-        //cmdParser.addArgument("outgroupRooting", ["-r", "--outgroup"], "string", null, false, "By default midpointrooting is used in order to convert the unrooted tree into a rooted one. However by using this argument you may specify an outgroup.");
+        cmdParser.addArgument("midPointRooting", ["-p", "--midPointRooting"], "bool", "false", false, "Whether to use midpointrooting.");
+        cmdParser.addArgument("outgroopRooting", ["-u", "--outgroopRooting"], "string", null, false, "Whether to use Outgroop rooting. If given, the parsed newick tree will be rerooted by using the given individual as outgroop.");
         cmdParser.addArgument("rule", ["-l", "--rule"], "int", null, true, "The rule to decide whether two sister clades are different species. Till now the rules of Rosenberg (0) and Birky (1) are implemented.");
         cmdParser.addArgument("decisionThreshold", ["-k", "--decisionThreshold"], "float", null, true, "The decision threshold to use.");
-        //cmdParser.addArgument("combinationRule", ["-c", "--combinationRule"], "int", "0", false, "The combination rule to take. Till now (0) short, (1) transitivity, (2) majority and (3) all are implemented.");
         cmdParser.addArgument("monophyleticOnly", ["-m", "--monophyleticOnly"], "bool", "false", false, "Delimit only monophyletic species.");
         cmdParser.addArgument("out", ["-o", "--out"], "string", null, true, "The output file to write the delimitation result to.");
         cmdParser.addArgument("svgOut", ["-v", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
@@ -356,9 +272,18 @@ class CLI
         }*/
         var clade:Clade = createCladesByNewickFile(distanceMatrix, cmd.getString("newickFile"));
         
+        System.messages.add(3, "Rerooting", "Running rerooting algorithm");
         var outgroop:String = cmd.getString("outgroopRooting");
+        var midPointRooting:Bool = cmd.getBool("midPointRooting");
         if (outgroop != null && outgroop != "") {
+            if (midPointRooting) {
+                throw "Please do not specify both, outgroop and midpoint rooting!";
+            }
             var rerooter:OutgroopRerooter = new OutgroopRerooter(outgroop);
+            clade = rerooter.reroot(clade);
+        }
+        if (midPointRooting) {
+            var rerooter:MidpointRerooter = new MidpointRerooter();
             clade = rerooter.reroot(clade);
         }
 
