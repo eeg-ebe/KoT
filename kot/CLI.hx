@@ -279,9 +279,12 @@ class CLI
         var bootstrapThreshold:Float = cmd.getFloat("bootstrapThreshold");
         if (0 <= bootstrapThreshold) {
             System.messages.add(3, "CladeCombinder", "Collapsing all clades which do not have a support of at least " + bootstrapThreshold);
+            var initalCount:Int = clade.countCaldesInTree();
             var combiner = new CladeCombiner(bootstrapThreshold);
             combiner.setBootstrapSupportNeeded(bootstrapThreshold);
             clade = combiner.collapseClades(clade);
+            var nowCount:Int = clade.countCaldesInTree();
+            System.messages.add(3, "CladeCombinder", "Collapsed " + (initalCount - nowCount) + " clades!");
         }
         
         System.messages.add(3, "Rerooting", "Running rerooting algorithm");
