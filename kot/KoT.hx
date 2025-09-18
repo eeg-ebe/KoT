@@ -15,15 +15,13 @@
  */
 package kot;
 
-#if js
 import haxe.ds.StringMap;
-#end
 #if sys
 import sys.io.File;
 import haxelib.cmd.CommandlineParser;
 import haxelib.cmd.CommandlineParserResult;
-import haxelib.bio.evolution.Newick;
-import haxelib.bio.evolution.IClade as NewickClade;
+//import haxelib.bio.evolution.Newick;
+//import haxelib.bio.evolution.IClade as NewickClade;
 #end
 import haxe.ds.Vector;
 
@@ -112,6 +110,8 @@ class KoT {
     }
 
     public static function main() {
+
+/*
         #if sys
         var cmdParser:CommandlineParser = new CommandlineParser("kot", "Perform k/thetha calculations");
         cmdParser.addArgument("transitivity", ["-t", "--transitivity"], "bool", "false", false, "Whether to use transitivity.");
@@ -123,6 +123,10 @@ class KoT {
         cmdParser.addArgument("newick", ["-w", "--newick"], "string", null, false, "Path to a file containint the tree (in Newick format) to use.");
         cmdParser.addArgument("threshold", ["-h", "--threshold"], "float", "0.8", false, "The threshold to combine clades.");
         var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
+
+        var decisionRatio:Float = cast(e.data.decisionRatio, Float);
+        var globalDeletion:Bool = cast(e.data.globalDeletion, Bool);
+        var transitivity:Bool = cast(e.data.transitivity, Bool);
 
         var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
         var decisionRatio:Float = cmd.getFloat("decisionRatio");
@@ -172,6 +176,81 @@ class KoT {
             var svg:String = c.getSVG();
             File.saveContent(svgFilePath, svg);
         }
+*/
+        #if sys
+        var result:StringMap<String> = new StringMap<String>();
+        try {
+            var cmdParser:CommandlineParser = new CommandlineParser("kot", "Perform k/thetha calculations");
+            cmdParser.addArgument("file", ["-f", "--file"], "string", null, true, "The fasta file to read.");
+            cmdParser.addArgument("decisionRatio", ["-k", "--decisionRatio"], "float", "4.0", false, "The decision treshhold.");
+            cmdParser.addArgument("noglobalDeletion", ["-n", "--noGlobalDeletion"], "bool", "false", false, "Whether to disable global deletion.");
+            cmdParser.addArgument("transitivity", ["-t", "--transitivity"], "bool", "false", false, "Whether to use transitivity.");
+            cmdParser.addArgument("svgOut", ["-s", "--svg"], "string", null, false, "A possible file to write the svg tree to.");
+            cmdParser.addArgument("out", ["-o", "--out"], "string", null, false, "The output path to write the delimitation result to.");
+//            cmdParser.addArgument("lineEnd", ["-l", "--lineEnd"], "bool", "false", false, "Whether to add a new line at the end of the output file (for buggy programs that will crash when taking files without an ending newline as input).");
+            var cmd:CommandlineParserResult = cmdParser.parse(Sys.args());
+            
+            if (cmd.hasError()) {
+                var errorMessage:String = cmd.getErrorMessage();
+                Sys.stderr().writeString(errorMessage);
+                Sys.exit(1);
+            }
+    
+            var path:String = cmd.getString("file");
+            var fileContent:String = File.getContent(path);
+            var globalDeletion:Bool = !cmd.getBool("noglobalDeletion");
+            var decisionRatio:Float = cmd.getFloat("decisionRatio");
+            var transitivity:Bool = cmd.getBool("transitivity");
+
+            var g:Graph<Sequence,Float> = null;
+            if (fileContent.charAt(0) == ">" || fileContent.charAt(0) == ";") {
+                var reader:FastaAlignmentReader = new FastaAlignmentReader();
+                var seqs:Vector<Sequence> = reader.readSequences(fileContent, globalDeletion);
+                if (seqs.length <= 1) {
+                    result.set("svg", "");
+                    result.set("putativeSpecies", "All sequences are the same!");
+                    return;
+                }
+                g = NeighborJoining.run(seqs);
+            } else {
+                var reader:DistanceMatrixReader = new DistanceMatrixReader();
+                var d:DistanceMatrix<Sequence> = reader.readMatrix(fileContent);
+                g = NeighborJoining.runOnMatrix(d);
+                FourTimesRule.distanceMatrix = d;
+            }
+            var c:Clade = MidPointRooter.root(g);
+            var s:List<List<Sequence>> = FourTimesRule.doRule(c, decisionRatio, transitivity);
+            var resL:String = formatSpeciesList(s);
+            CladeColorer.colorClades(c, s);
+            var svg:String = c.getSVG();
+            result.set("svg", svg);
+            result.set("putativeSpecies", resL);
+
+
+//            Sys.stdout().writeString("\n=== RESULTS ===");
+//            Sys.stdout().writeString(result.get("svg"));
+//            Sys.stdout().writeString("\n");
+//            Sys.stdout().writeString(result.get("putativeSpecies"));
+
+            var svgFilePath:String = cmd.getString("svg");
+            if (svgFilePath != null) {
+                File.saveContent(svgFilePath, result.get("svg"));
+            }
+            var outFile:String = cmd.getString("out");
+            if (outFile == null || outFile == "") {
+                Sys.stdout().writeString("\n");
+                Sys.stdout().writeString(result.get("putativeSpecies"));
+                Sys.stdout().writeString("\n");
+            } else {
+                var lineEnd:Bool = true; //cmd.getBool("lineEnd");
+                File.saveContent(outFile, resL + ((lineEnd) ? "\n" : ""));
+            }
+
+        } catch(e:Dynamic) {
+            trace(e);
+            result.set("svg", "The following error occurred: " + e);
+            result.set("putativeSpecies", "");
+        }
 
         #elseif js
         workerScope = untyped self;
@@ -179,46 +258,6 @@ class KoT {
         #end
     }
 
-    #if sys
-    public static function combineClades(c:Clade, t:Float):Clade {
-        
-    }
-    
-    public static function recursiveCopy(seqs:Vector<Sequence>, g:Graph<Sequence,Float>, clade:NewickClade, ?i:Int=0):Sequence {
-        var name:String = clade.getName();
-        var childs = clade.getChilds();
-        if (childs != null && !childs.isEmpty()) {
-            var l:List<String> = new List<String>();
-            //l.add("Inner" + (i));
-            var inner:Sequence = new Sequence(l, null);
-            g.addNode(inner);
-            for (child in childs) {
-                var outer:Sequence = recursiveCopy(seqs, g, child, i+1);
-                var dist:Float = child.getDistance();
-                if (dist == null) {
-                    throw "No distance given for clade";
-                }
-                g.addEdge(outer, inner, dist);
-            }
-            return inner;
-        } else {
-            var nameToFind:String = clade.getName();
-            if (nameToFind == null || nameToFind == "") {
-                throw "Empty name for leaf clade in newick";
-            }
-            for (seq in seqs) {
-                var seqNames = seq.getNames();
-                for (name in seqNames) {
-                    if (name == nameToFind) {
-                        return seq;
-                    }
-                }
-            }
-            throw "No sequence(s) for " + name + " found!";
-        }
-        return null;
-    }
-    #end
 
 /*    public static function main() {
 //        var c:Clade = new Clade();
